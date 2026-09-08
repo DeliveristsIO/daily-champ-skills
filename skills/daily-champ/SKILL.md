@@ -75,7 +75,7 @@ nothing lands in a config file, and the session renews itself.
 3. **Verify** with `get_today`.
 
 **Or a token**, for a headless machine or a client with no OAuth. Ask the human
-to open Daily Champ → **Settings** → **API tokens** → new token, copy it once,
+to open Daily Champ → **Settings** → **Devices** → new device token, copy it once,
 and `export DAILY_CHAMP_TOKEN=…`. Then add the server with the header:
 
 - Claude Code — `claude mcp add --transport http --scope user daily-champ https://daily-champ.deliverists.io/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"`
@@ -83,8 +83,10 @@ and `export DAILY_CHAMP_TOKEN=…`. Then add the server with the header:
 - A client with no MCP support — `npx mcp-remote https://daily-champ.deliverists.io/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"` as the stdio command.
 
 Both credentials go on the same `Authorization: Bearer` header and reach the
-same tools. A token belongs to one person and one device; revoking it in
-Settings cuts that device off at once. There is no account subdomain to
+same tools. A token belongs to one person and one device; revoking it under
+**Settings → Devices** cuts that device off at once. A browser sign-in is
+listed under **Settings → Agents** instead, and disconnecting it there kills
+the agent's access the moment you click it. There is no account subdomain to
 remember either way.
 
 ### The transport, if you are driving it by hand

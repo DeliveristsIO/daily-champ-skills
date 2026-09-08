@@ -115,7 +115,7 @@ ask the user to authorize in their browser.
 For a headless machine, CI, or a client with no OAuth support. Both credentials
 go on the same `Authorization: Bearer` header and reach the same tools.
 
-1. Open Daily Champ → **Settings** → **API tokens** → **New token**. Name it
+1. Open Daily Champ → **Settings** → **Devices** → **New device token**. Name it
    after this machine.
 2. Copy it — it is shown once and never again — and export it, ideally from your
    shell profile so it survives a new terminal:
@@ -142,8 +142,9 @@ npx mcp-remote https://daily-champ.deliverists.io/mcp \
   --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"
 ```
 
-A token is one device's access. Revoking it in Settings cuts that machine off
-and nothing else.
+A token is one device's access. Revoking it under **Settings → Devices** cuts
+that machine off and nothing else. An agent you signed in through the browser
+lives under **Settings → Agents**, where **Disconnect** ends its access at once.
 
 ---
 

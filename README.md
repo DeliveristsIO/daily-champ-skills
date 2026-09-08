@@ -40,6 +40,8 @@ config:
 A Daily Champ account, authorized in your browser through standard MCP OAuth —
 no keys to copy, and no password anywhere near your agent. For a headless
 machine or a client without OAuth there is an API token fallback: **Settings →
-API tokens**, one per device, revocable from the same page.
+Devices**, one per device, revocable from the same page. Agents you signed in
+through the browser are listed under **Settings → Agents** and disconnect from
+there.
 
 Built by [Deliverists.IO](https://deliverists.io).
