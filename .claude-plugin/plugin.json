@@ -1,0 +1,23 @@
+{
+  "name": "daily-champ",
+  "displayName": "Daily Champ",
+  "version": "1.0.0",
+  "description": "Your day, your board and your clock — read and change them from the terminal through the Daily Champ MCP server.",
+  "author": {
+    "name": "Deliverists.IO Sp. z o.o.",
+    "email": "office@deliverists.io",
+    "url": "https://deliverists.io"
+  },
+  "homepage": "https://deliverists.io",
+  "repository": "https://github.com/DeliveristsIO/daily-champ-skills",
+  "keywords": ["tasks", "productivity", "timer", "worklog", "mcp", "daily-champ"],
+  "mcpServers": {
+    "daily-champ": {
+      "type": "http",
+      "url": "https://daily-champ.deliverists.io/mcp",
+      "headers": {
+        "Authorization": "Bearer ${DAILY_CHAMP_TOKEN}"
+      }
+    }
+  }
+}
