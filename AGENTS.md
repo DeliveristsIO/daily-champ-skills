@@ -38,7 +38,15 @@ it is the reason the skill exists.
 3. If it covers something new, add a workflow and any triggers for it by hand.
 4. Run `bin/rails test test/agent/` in the app.
 
+## Two ways in
+
+The server takes either credential on the same `Authorization: Bearer` header:
+an OAuth access token, or an `OpenLoam::ApiToken` from Settings. OAuth is the
+path the docs lead with — nothing is copied and the session renews itself — and
+the token is the fallback for headless machines and clients without OAuth. Both
+reach exactly the same tools, so nothing else in the skill has to branch.
+
 ## Checking it works
 
 Drive the server directly — stateless streamable HTTP, so a bare `tools/call`
-POST needs no handshake and no session id. The curl is in `install.md`, step 4.
+POST needs no handshake and no session id. The curl is in `install.md`, step 3.

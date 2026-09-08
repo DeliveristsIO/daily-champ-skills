@@ -14,10 +14,7 @@
   "mcpServers": {
     "daily-champ": {
       "type": "http",
-      "url": "https://daily-champ.deliverists.io/mcp",
-      "headers": {
-        "Authorization": "Bearer ${DAILY_CHAMP_TOKEN}"
-      }
+      "url": "https://daily-champ.deliverists.io/mcp"
     }
   }
 }

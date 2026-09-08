@@ -8,8 +8,8 @@ npx skills add DeliveristsIO/daily-champ-skills
 ```
 
 Then follow [`install.md`](install.md) — it is written to be handed to your agent
-and executed. The only step you have to do yourself is minting an API token in
-Settings.
+and executed. The only step you do yourself is signing in through the browser
+when prompted; there are no keys to copy.
 
 **Claude Code, in one step** — the plugin bundles the skill *and* the MCP server
 config:
@@ -37,8 +37,9 @@ config:
 
 ## Requires
 
-A Daily Champ account and an API token from **Settings → API tokens**. One token
-per device, revocable from the same page. No OAuth, no subdomain, no password
-anywhere near your agent.
+A Daily Champ account, authorized in your browser through standard MCP OAuth —
+no keys to copy, and no password anywhere near your agent. For a headless
+machine or a client without OAuth there is an API token fallback: **Settings →
+API tokens**, one per device, revocable from the same page.
 
 Built by [Deliverists.IO](https://deliverists.io).

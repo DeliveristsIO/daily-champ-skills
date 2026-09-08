@@ -59,22 +59,33 @@ reach all of it through MCP tools — no CLI, no curl.
 Check first: call `get_today`. If it resolves, you are connected; skip this
 section.
 
-If Daily Champ tools are missing, add the server to your own config and then ask
-the human for the one thing only they can do — minting a token.
+If Daily Champ tools are missing, add the server to your own config, then hand
+the sign-in to the human — that part is theirs and cannot be automated.
 
-1. **Ask the human** to open Daily Champ → **Settings** → **API tokens** → new
-   token, copy it once (it is never shown again), and export it:
-   `export DAILY_CHAMP_TOKEN=…`
-2. **Add the server** with the command for your client:
-   - Claude Code — `claude mcp add --transport http --scope user daily-champ https://daily-champ.deliverists.io/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"`
-   - Codex — `codex mcp add daily-champ --url https://daily-champ.deliverists.io/mcp --bearer-token-env-var DAILY_CHAMP_TOKEN`
-   - OpenCode — under `"mcp"` in `opencode.json`: `"daily-champ": { "type": "remote", "url": "https://daily-champ.deliverists.io/mcp", "headers": { "Authorization": "Bearer {env:DAILY_CHAMP_TOKEN}" } }`
-   - A client with no MCP support — use `npx mcp-remote https://daily-champ.deliverists.io/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"` as the stdio command.
-3. **Restart the session**, then verify with `get_today`.
+**Prefer the browser sign-in.** It is standard MCP OAuth: no secret is copied,
+nothing lands in a config file, and the session renews itself.
 
-The token is the whole credential — there is no OAuth browser step and no
-account subdomain. A token belongs to one person and one device, and revoking it
-in Settings cuts that device off immediately.
+1. **Add the server**, no header:
+   - Claude Code — `claude mcp add --transport http --scope user daily-champ https://daily-champ.deliverists.io/mcp`
+   - Codex — `codex mcp add daily-champ --url https://daily-champ.deliverists.io/mcp`, then `codex mcp login daily-champ`
+   - OpenCode — under `"mcp"` in `opencode.json`: `"daily-champ": { "type": "remote", "url": "https://daily-champ.deliverists.io/mcp" }`
+2. **Restart the session**, then tell the human to run `/mcp`, pick
+   **daily-champ**, choose **Authenticate**, sign in and authorize. Wait for
+   them — you cannot do this step.
+3. **Verify** with `get_today`.
+
+**Or a token**, for a headless machine or a client with no OAuth. Ask the human
+to open Daily Champ → **Settings** → **API tokens** → new token, copy it once,
+and `export DAILY_CHAMP_TOKEN=…`. Then add the server with the header:
+
+- Claude Code — `claude mcp add --transport http --scope user daily-champ https://daily-champ.deliverists.io/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"`
+- Codex — `codex mcp add daily-champ --url https://daily-champ.deliverists.io/mcp --bearer-token-env-var DAILY_CHAMP_TOKEN`
+- A client with no MCP support — `npx mcp-remote https://daily-champ.deliverists.io/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"` as the stdio command.
+
+Both credentials go on the same `Authorization: Bearer` header and reach the
+same tools. A token belongs to one person and one device; revoking it in
+Settings cuts that device off at once. There is no account subdomain to
+remember either way.
 
 ### The transport, if you are driving it by hand
 

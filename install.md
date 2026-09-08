@@ -11,41 +11,21 @@ agent's config, and calling `get_today` returns my day.
 
 ## TODO
 
-- [ ] Step 1 — get a token (human)
-- [ ] Step 2 — connect the MCP server
-- [ ] Step 3 — install the skill docs
-- [ ] Step 4 — restart and verify
+- [ ] Step 1 — connect the MCP server
+- [ ] Step 2 — install the skill docs
+- [ ] Step 3 — sign in (human) and verify
 
 ---
 
-## Step 1 — get a token · **HUMAN**
+## Step 1 — connect the MCP server
 
-Only the account holder can do this. If you are an agent reading this file, tell
-the user to do it and wait for them.
-
-1. Open Daily Champ and sign in.
-2. **Settings** → **API tokens** → **New token**. Name it after this machine.
-3. Copy the token. It is shown once and never again.
-4. Export it in the shell this agent runs in:
-
-```bash
-export DAILY_CHAMP_TOKEN='paste-it-here'
-```
-
-Put that line in your shell profile so it survives a new terminal. The token is
-one device's access — revoking it in Settings cuts this machine off and nothing
-else. There is no OAuth browser step and no account subdomain to remember.
-
-## Step 2 — connect the MCP server
-
-Run the one for this client.
+Daily Champ speaks standard MCP OAuth, so there is **nothing to copy**. Add the
+server with no header and the sign-in happens in a browser.
 
 **Claude Code**
 
 ```bash
-claude mcp add --transport http --scope user daily-champ \
-  https://daily-champ.deliverists.io/mcp \
-  --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"
+claude mcp add --transport http --scope user daily-champ https://daily-champ.deliverists.io/mcp
 ```
 
 `--scope user` makes it available in every project. Drop it for this project
@@ -54,26 +34,19 @@ only.
 **Codex**
 
 ```bash
-codex mcp add daily-champ \
-  --url https://daily-champ.deliverists.io/mcp \
-  --bearer-token-env-var DAILY_CHAMP_TOKEN
+codex mcp add daily-champ --url https://daily-champ.deliverists.io/mcp
+codex mcp login daily-champ
 ```
 
-Codex reads the variable at call time, so the token never lands in
-`~/.codex/config.toml`.
-
-**Editing the config by hand** — `~/.claude.json` under `mcpServers`, or a
-project-level `.mcp.json`:
+**By hand** — `~/.claude.json` under `mcpServers`, or a project-level
+`.mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "daily-champ": {
       "type": "http",
-      "url": "https://daily-champ.deliverists.io/mcp",
-      "headers": {
-        "Authorization": "Bearer ${DAILY_CHAMP_TOKEN}"
-      }
+      "url": "https://daily-champ.deliverists.io/mcp"
     }
   }
 }
@@ -82,12 +55,11 @@ project-level `.mcp.json`:
 **Other clients**
 
 - **OpenCode** — under `"mcp"` in `opencode.json`:
-  `"daily-champ": { "type": "remote", "url": "https://daily-champ.deliverists.io/mcp", "headers": { "Authorization": "Bearer {env:DAILY_CHAMP_TOKEN}" } }`
+  `"daily-champ": { "type": "remote", "url": "https://daily-champ.deliverists.io/mcp" }`
 - **Cursor / VS Code** — the same block in `.cursor/mcp.json` or `.vscode/mcp.json`.
-- **An agent with no MCP support** — run it over stdio:
-  `npx mcp-remote https://daily-champ.deliverists.io/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"`
+- **An agent with no MCP support** — see the token fallback below.
 
-## Step 3 — install the skill docs
+## Step 2 — install the skill docs
 
 ```bash
 npx skills add DeliveristsIO/daily-champ-skills
@@ -108,9 +80,14 @@ config with it:
 
 You still need `DAILY_CHAMP_TOKEN` exported from step 1.
 
-## Step 4 — restart and verify
+## Step 3 — sign in and verify · **HUMAN for the sign-in**
 
-Restart the session so the new server and skill are picked up, then ask:
+Restart the session so the new server and skill are picked up. Then the human
+authorizes — an agent cannot do this part:
+
+> `/mcp` → **daily-champ** → **Authenticate** → sign in → **Authorize**
+
+Then ask:
 
 > what's on today?
 
@@ -125,11 +102,48 @@ curl -s https://daily-champ.deliverists.io/mcp \
   -d '{"jsonrpc":"2.0","id":"1","method":"tools/list"}' | grep -o start_timer
 ```
 
-`start_timer` in the output means the server is reachable and the token is good.
-A `401` means the token is wrong, expired or revoked — go back to step 1.
+`start_timer` in the output means the server is reachable and the credential is
+good. A `401` means the sign-in did not complete — run `/mcp` again.
 
-**EXECUTE NOW:** start with Step 1 by asking the user for a token, then carry on
-through Step 4 without further prompting.
+**EXECUTE NOW:** start with Step 1, carry on through Step 3, and stop only to
+ask the user to authorize in their browser.
+
+---
+
+## Fallback: an API token
+
+For a headless machine, CI, or a client with no OAuth support. Both credentials
+go on the same `Authorization: Bearer` header and reach the same tools.
+
+1. Open Daily Champ → **Settings** → **API tokens** → **New token**. Name it
+   after this machine.
+2. Copy it — it is shown once and never again — and export it, ideally from your
+   shell profile so it survives a new terminal:
+
+```bash
+export DAILY_CHAMP_TOKEN='paste-it-here'
+```
+
+3. Add the server with the header:
+
+```bash
+# Claude Code
+claude mcp add --transport http --scope user daily-champ \
+  https://daily-champ.deliverists.io/mcp \
+  --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"
+
+# Codex — reads the variable at call time, so the token never lands in config.toml
+codex mcp add daily-champ \
+  --url https://daily-champ.deliverists.io/mcp \
+  --bearer-token-env-var DAILY_CHAMP_TOKEN
+
+# stdio-only agents
+npx mcp-remote https://daily-champ.deliverists.io/mcp \
+  --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"
+```
+
+A token is one device's access. Revoking it in Settings cuts that machine off
+and nothing else.
 
 ---
 
