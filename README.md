@@ -3,6 +3,9 @@
 Talk to [Daily Champ](https://daily-champ.deliverists.io) from Claude Code,
 Codex, Cursor and anything else that speaks MCP.
 
+This repository is private. Every command below reads it over your own GitHub
+access, so `gh auth status` should be green and your SSH key loaded first.
+
 ```bash
 npx skills add DeliveristsIO/daily-champ-skills
 ```
@@ -15,9 +18,12 @@ when prompted; there are no keys to copy.
 config:
 
 ```
-/plugin marketplace add DeliveristsIO/daily-champ-skills
+/plugin marketplace add git@github.com:DeliveristsIO/daily-champ-skills.git
 /plugin install daily-champ@deliverists
 ```
+
+If either command cannot reach the repository, clone it over SSH and link the
+skill by hand — see **Manual installation** in [`install.md`](install.md).
 
 ## What you can ask for
 

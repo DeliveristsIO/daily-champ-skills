@@ -61,6 +61,10 @@ codex mcp login daily-champ
 
 ## Step 2 — install the skill docs
 
+The repository is private, so this reads it over your own GitHub access. If
+`gh auth status` is not green, or the command cannot find the repository, go
+straight to **Manual installation** at the bottom.
+
 ```bash
 npx skills add DeliveristsIO/daily-champ-skills
 ```
@@ -74,7 +78,7 @@ globally. Check it landed with `npx skills list`.
 config with it:
 
 ```
-/plugin marketplace add DeliveristsIO/daily-champ-skills
+/plugin marketplace add git@github.com:DeliveristsIO/daily-champ-skills.git
 /plugin install daily-champ@deliverists
 ```
 
@@ -150,10 +154,12 @@ lives under **Settings → Agents**, where **Disconnect** ends its access at onc
 
 ## Manual installation
 
-Do not execute this section unless explicitly asked.
+Do not execute this section unless explicitly asked — except when the commands
+above could not reach the private repository, in which case this is the way in.
+It needs an SSH key with access to the DeliveristsIO organisation.
 
 ```bash
-git clone https://github.com/DeliveristsIO/daily-champ-skills ~/.daily-champ-skills
+git clone git@github.com:DeliveristsIO/daily-champ-skills.git ~/.daily-champ-skills
 mkdir -p ~/.claude/skills
 ln -sfn ~/.daily-champ-skills/skills/daily-champ ~/.claude/skills/daily-champ
 
