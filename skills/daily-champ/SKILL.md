@@ -1,10 +1,11 @@
 ---
 name: daily-champ
 description: |
-  Drive Daily Champ through its MCP server: today's plan, the areas board, the
-  worklog lanes, timers, estimates, repeats and the archive.
+  Drive Daily Champ through its MCP server — the whole app, not a corner of it:
+  today and any other day, the areas board, the worklog lanes, cards and their
+  plans, timers, estimates, repeats, steps, checklists, sharing and the archive.
   Use for ANY question about what to work on, what is running right now, what is
-  planned, what slipped, or what got done.
+  planned, what slipped, what got done, or what somebody else is waiting on.
 triggers:
   # Direct
   - daily champ
@@ -40,6 +41,14 @@ triggers:
   - every monday
   - push it to
   - archive it
+  - plan this card
+  - start a card
+  - break it into steps
+  # People
+  - share this with
+  - ask them to
+  - sign it off
+  - who is waiting on me
   # Looking back
   - my streak
   - what did I get done
@@ -51,8 +60,9 @@ argument-hint: "[action] [args...]"
 # Daily Champ
 
 Daily Champ is a day tracker: a **board** of areas holding tasks, a **worklog**
-of lanes holding the work in hand, and a **day** that says what is on today. You
-reach all of it through MCP tools — no CLI, no curl.
+of lanes holding the work in hand, **cards** for projects with an end, and a
+**day** that says what is on. You reach all of it through MCP tools — no CLI, no
+curl — and the tools cover everything the app can do, deleting included.
 
 ## If the tools are not there
 
@@ -149,6 +159,34 @@ task pull it into the worklog.
   task and leaves the days its past sittings are on; `everywhere: true` takes
   both. Every other tool takes either id and does the same thing.
 
+- **Cards are projects, areas are not.** An area is a standing part of someone's
+  life and never ends; a card runs between two dates and has a plan spread over
+  them. `plan_card` with no `tasks` drafts a plan and saves nothing — show it to
+  the human, then call it again with the tasks they kept. Only today and tomorrow
+  are written out as real tasks; the rest arrive each morning.
+- **Finishing a card is a status, not a delete.** `update_card(status:
+  "achieved")` or `"abandoned"` closes it and keeps everything. `delete_card`
+  destroys its tasks, their sittings, its plan and its reviews.
+
+- **A day is more than its tasks.** `get_day` shows the sections it is laid out
+  in — checklists and notes — and `apply_template` lays a fresh one out. A note
+  is the first line on a text section, so it is written with
+  `add_checklist_item` and reworded with `update_checklist_item`.
+- **A day's status is not yours to set.** Pending today, scheduled ahead, win or
+  loss behind, worked out from its own tasks every time it is saved. Finish the
+  tasks and the day follows.
+
+- **Work handed to someone runs at both ends.** `update_task(assignee:)` asks
+  them; they answer with `respond_to_task`, and declining needs a reason.
+  Finishing it does not close it — it goes back to whoever asked, who closes it
+  with `sign_off_task(decision: "approve")` or reopens it with `"send_back"` and
+  a reason. Every reason is written onto the task's thread.
+- **Two tools reach outside the account, and both say so.** `share_task` with an
+  address nobody here has sends that person an invitation email. `share_link`
+  mints a URL that shows the task to anyone holding it, with no sign-in. Say what
+  will happen and get a yes before either; `share_link(revoke: true)` kills a
+  link at once.
+
 ## Working rules for you
 
 - **Read before you write.** `get_today` or `get_board` first, then act on the
@@ -158,8 +196,9 @@ task pull it into the worklog.
   refusal tells you today's date, so one retry is enough.
 - **Never invent a number.** Streaks, tracked minutes and counts come from tool
   results. Do not estimate them.
-- **You are the coach.** There are no coaching tools and you do not need any —
-  the app's own coach is a smaller model. Give the advice yourself.
+- **You are the coach.** The app's own coach is a smaller model. `plan_day` and
+  `plan_card` reach it for a draft, which is worth it when the human wants the
+  app's own read; otherwise give the advice yourself.
 - **Say what you changed.** Quote the tool's own sentence back; it already names
   the lane, the clock and the day.
 
@@ -172,8 +211,11 @@ task pull it into the worklog.
 | `get_today` | read | — | What is on today: the task with the clock running, everything planned for the day, and how much of it is done. Start here when asked what to work on. |
 | `get_board` | read | `include_done?` `include_archived?` | The whole board: every area with the tasks parked in it, and the worklog lanes with the work in hand. Use it to see what exists before adding something new — every heading carries the id you need to change it. |
 | `search_tasks` | read | `query` | Find a task, an area or a card by name. Unfinished work is always findable; finished work drops out after a week. |
-| `get_task` | read | `task_id` | Everything about one task, from either end: where it lives on the board, where it sits in the worklog, its estimate, its clock, its repeat and its steps. |
+| `get_task` | read | `task_id` | Everything about one task, from either end: where it lives on the board, where it sits in the worklog, its estimate, its clock, its repeat, its steps, who it is shared with and what has been said on it. |
 | `get_stats` | read | `days?` | How the run is going: the current streak, the best one, what got finished each of the last few days, and which areas the time went into. |
+| `get_cards` | read | `card?` | Cards are the projects with an end: a title, a window of days, and a plan spread across them. With no id this lists them; with one it opens that card, its plan, its tasks and its reviews. |
+| `get_day` | read | `date?` `thread?` | One day in full: how it was called, what was planned, and the sections it is laid out in — checklists and notes both. Ask for the thread to see what the day's coach has said. |
+| `list_notifications` | read | `unread_only?` `limit?` | What has happened that involves other people: work shared with you, asked of you, accepted, declined or signed off. Reading them here does not mark them read. |
 | `create_task` | write | `title` `area?` `date?` `estimate_minutes?` `lane?` | Add a task. With no area it lands on a day as work to do; with an area it is parked on the board until it is pulled in. Several lines in one title become several tasks. |
 | `update_task` | write | `task_id` `title?` `description?` `notes?` `note?` `tag?` `deadline?` `assignee?` | Change a task's wording, its deadline, its tag or who it is for. A rename carries across both halves on its own, so it does not matter which id you hold. |
 | `complete_task` | write | `task_id` | Tick a task off. Both halves finish together, and a running clock is stopped and banked as part of the same move. |
@@ -197,6 +239,27 @@ task pull it into the worklog.
 | `create_lane` | write | `name` `starts_work?` `finishes_work?` | Add a column to the worklog. A lane is placement, and its two flags are what make it mean something: a lane that starts work starts the task's clock running against the WIP limit, and one that finishes work ticks the task off. |
 | `update_lane` | write | `lane` `name?` `starts_work?` `finishes_work?` | Rename a worklog lane or change what landing in it means. Changing the flags does not re-file the work already sitting there; it changes what the next move into it does. |
 | `delete_lane` | write | `lane` | Take a lane off the worklog. The work in it is not lost — each task moves to whichever remaining lane matches where it had got to. The last lane cannot go. |
+| `create_card` | write | `title` `description?` `start_date?` `end_date?` `area?` `most_per_day?` `rest_weekday?` | Start a card: a project with an end, as against an area, which is a standing part of life. With no dates it opens a 90-day window from today. |
+| `update_card` | write | `card` `title?` `description?` `status?` `start_date?` `end_date?` `area?` `most_per_day?` `rest_weekday?` | Change a card, including closing it: achieved when it worked, abandoned when it did not. Neither touches the tasks already written out of its plan. |
+| `delete_card` | write | `card` | Destroy a card and everything written out of it. Its tasks go too, and so do their sittings, its plan, its reviews and its coach thread. To stop a card without losing any of that, set its status to abandoned instead. |
+| `plan_card` | write | `card` `tasks?` | Draft or save a card's plan. Called with no tasks it asks the app's own coach for a draft and hands it back without saving anything, so it can be shown to the person first. Called with tasks it saves them, and writes today's and tomorrow's into real tasks; the rest are written each morning as they come. |
+| `review_card` | write | `card` `suggest?` `period_start?` `period_end?` `progress_rating?` `are_items_effective?` `what_worked?` `what_to_improve?` `notes?` | Write a review of how a card is going over a stretch of days. Ask the app's own coach for something to react to first with suggest, which drafts a review without saving it. |
+| `plan_day` | write | `date?` `tasks?` | Draft or fill a day. Called with no tasks it asks the app's own day coach what to put on the day, given what is already there, and saves nothing. Called with tasks it puts them on the day. |
+| `apply_template` | write | `template?` `date?` | Lay a day out from a template — its sections and whatever they always start with. With no template named this lists the templates there are and changes nothing. Applying one replaces the sections already on that day. |
+| `delete_section` | write | `section_id` | Take a section off a day, with everything on its checklist. Tasks are not in a section — delete_task takes those. |
+| `add_checklist_item` | write | `section_id` `contents` | Put something on one of a day's checklists — the sections a day is laid out in, as against the tasks on it. |
+| `update_checklist_item` | write | `item_id` `done?` `content?` | Tick something off a day's checklist, put it back, or reword it. |
+| `delete_checklist_item` | write | `item_id` | Take a line off a day's checklist for good. |
+| `respond_to_task` | write | `task_id` `decision` `reason?` | Answer a task somebody has asked you to do. Accepting takes it on; declining hands it back with the reason, which is written into its thread. Only the person it was given to can answer. |
+| `sign_off_task` | write | `task_id` `decision` `reason?` | Say whether work you asked somebody for is done. Approving closes it; sending it back reopens it with the reason on its thread. Only the person who asked can do either. |
+| `add_comment` | write | `id` `body` | Say something on a task's or a card's thread. Everyone it is shared with sees it, and anyone named with an @ is told. |
+| `delete_comment` | write | `comment_id` | Take back something you said. The line stays on the thread marked as deleted, so nobody is left answering a comment that vanished. Only its author can. |
+| `share_task` | write | `id` `with` `level?` | Let somebody else in on a task or a card, to look at or to work on. Somebody already in the workspace is told in the app; an email nobody here has is sent an invitation, so check the address before you call this. |
+| `unshare_task` | write | `id` `from` | Take somebody off a task or a card. They lose sight of it at once; anything they already wrote on its thread stays. |
+| `share_link` | write | `id` `revoke?` | Make a link that shows a task or a card to anybody who has it, with no sign-in. Say the link back to the person before it goes anywhere. Called with revoke it kills the link instead, at once and for everyone. |
+| `ask_coach` | write | `id` `message` | Put a question to the app's own coach about one task or one card. It answers from what it can see of that thing and remembers the exchange on its thread. It is a smaller model than you — reach for it when the person wants the app's own read, not for advice you can give yourself. |
+| `ask_day_coach` | write | `message` `date?` | Put a question to the app's own coach about a whole day. It answers from what is on that day and remembers the exchange, which is what plan_day's draft then reads. |
+| `undo` | write | — | Take back the last change, whoever made it — this reverses the person's own last action in the app just as readily as your own. It goes back one step only, and it does not reach delete_task, delete_card or anything that was said to somebody else. |
 
 <!-- tools:end -->
 
@@ -232,6 +295,23 @@ board and comes back with a fresh sitting on each day it is due.
 they stand; anything in progress from an earlier day has already been carried
 onto today by the app. `get_stats` gives the streak and where the time went.
 
+**Start a project.** `create_card` opens a 90-day window. Then `plan_card` with
+no `tasks` drafts a plan from the app's own coach and saves nothing — read it
+back, and call `plan_card` again with the tasks they kept. Today's and
+tomorrow's become real tasks; the rest arrive each morning.
+
+**Break something down.** `add_step(task_id: …, titles: [...])`, then
+`update_step(step_id: …, done: true)` as each one is finished. `get_task` shows
+the list and the count.
+
+**Hand something to someone.** `update_task(task_id: …, assignee: "…")` asks
+them, `share_task` lets them see it, and `get_task` says where it has got to.
+When they finish it, it comes back to the owner for `sign_off_task`.
+
+**Take that back.** `undo` reverses the last change — the human's own as readily
+as yours, and one step only. It does not reach anything that was deleted or said
+to somebody else.
+
 ## Gotchas
 
 - **A refusal is not a failure.** The full-lane message and "already done" come
@@ -251,4 +331,12 @@ onto today by the app. `get_stats` gives the streak and where the time went.
 - **Writes are rate limited per token.** Past the ceiling you get JSON-RPC
   `-32000` with a Retry-After. Stop and tell the user; do not loop.
 - **Do not assume a tool exists.** The table above is generated from the live
-  server and is the whole surface. Anything not in it is not there.
+  server and is the whole surface. Anything not in it is not there — signing in,
+  billing, workspace settings and device tokens are all deliberately out.
+- **`undo` goes back one step, not many.** It undoes the last gesture, whoever
+  made it, and it does not reach a delete, a comment or an email.
+- **Reading notifications does not mark them read.** `list_notifications` leaves
+  them as they were, so the human still sees the badge.
+- **`ask_coach` and `ask_day_coach` cost a rate-limited request** and answer with
+  a smaller model than you. Use them when the human wants the app's own read.
+  Give your own advice for free.
