@@ -39,6 +39,9 @@ triggers:
   - set an estimate
   - repeat every
   - every monday
+  - remind me at
+  - due at
+  - give it a time
   - push it to
   - archive it
   - plan this card
@@ -142,6 +145,22 @@ task pull it into the worklog.
   takes it out of the lanes; it lands back in To do that morning on its own.
 - **Estimates are minutes.** Always. `set_estimate` takes minutes, `get_task`
   reports minutes.
+- **A time written into a title is the hour it is due.** `@9` or `@16:45`
+  anywhere in a title — on `create_task`, or on a rename — comes out of the name
+  and becomes when the task is due. A task with no day of its own is put down on
+  the first day it can still happen: today while the hour is ahead, tomorrow once
+  it has gone by. A task already sitting on a day keeps that day and takes the
+  hour on it. The 24-hour clock only, so `@25` and an address like `bob@12` are
+  left alone. `update_task(deadline:)` is the explicit form, for when the day
+  matters as much as the hour.
+- **A deadline nudges the person ten minutes before it.** One push, to whatever
+  they have turned notifications on for under **Settings** — you cannot turn that
+  on for them, and the button beside it sends a test one so they can prove it
+  works.
+- **Work already in hand sits at the bottom of its area.** `get_board` reads an
+  area the way the person is looking at it: what is still waiting first, then
+  whatever has been pulled into a lane, then what is done. The top of an area is
+  always what to pick up next.
 - **Lanes are the user's own rows**, not an enum. `todo`, `in_progress` and
   `done` always resolve, and so does any lane the user has named themselves.
   `create_lane` adds one, and its two flags are what give it meaning: a lane
@@ -181,6 +200,9 @@ task pull it into the worklog.
   Finishing it does not close it — it goes back to whoever asked, who closes it
   with `sign_off_task(decision: "approve")` or reopens it with `"send_back"` and
   a reason. Every reason is written onto the task's thread.
+- **An @ name on a thread only reaches someone who can already see the task.**
+  `add_comment` naming anybody else tells nobody, quietly — `share_task` first,
+  then mention them.
 - **Two tools reach outside the account, and both say so.** `share_task` with an
   address nobody here has sends that person an invitation email. `share_link`
   mints a URL that shows the task to anyone holding it, with no sign-in. Say what
@@ -193,7 +215,9 @@ task pull it into the worklog.
   ids you were given. Do not guess an id.
 - **Dates are ISO only.** You work out what "tomorrow" or "next Monday" means in
   the user's timezone; `schedule_task` takes `YYYY-MM-DD` and nothing else. Its
-  refusal tells you today's date, so one retry is enough.
+  refusal tells you today's date, so one retry is enough. An hour — in a
+  `deadline` or written into a title — is read as the hour where the person is,
+  never where the server is, so you never convert one yourself.
 - **Never invent a number.** Streaks, tracked minutes and counts come from tool
   results. Do not estimate them.
 - **You are the coach.** The app's own coach is a smaller model. `plan_day` and
@@ -291,6 +315,13 @@ Days are numbers, Sunday is 0. `interval: 2` makes it every other week,
 no `unit` and no `days` stops the repeat. A repeating task stays one task on the
 board and comes back with a fresh sitting on each day it is due.
 
+**Give it a time.** `create_task(title: "Call the plumber @9")` puts the task on
+the first day nine o'clock can still happen and has it nudge the person ten
+minutes before. `update_task(task_id: …, title: "Call the plumber @16:45")` does
+the same to a task that already exists, and
+`update_task(task_id: …, deadline: "2026-09-15T09:00")` is the way to say the day
+as well as the hour.
+
 **Catch up on what slipped.** `get_board(include_done: false)` shows the lanes as
 they stand; anything in progress from an earlier day has already been carried
 onto today by the app. `get_stats` gives the streak and where the time went.
@@ -321,7 +352,8 @@ to somebody else.
 - **`set_estimate` needs a sitting.** A board task that was never pulled in has
   nowhere to put an estimate; the refusal tells you to `schedule_task` it first.
 - **`create_task` with an `area` does not put it on a day.** It parks it on the
-  board. Leave `area` out to plan it for today.
+  board. Leave `area` out to plan it for today — or write a time into the title,
+  which files it in the area and puts it on a day as well.
 - **Several titles in one call.** `create_task` splits on newlines and
   semicolons, so a pasted list becomes a list of tasks. It returns one line per
   task made.

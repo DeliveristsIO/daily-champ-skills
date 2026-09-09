@@ -32,7 +32,7 @@ skill by hand — see **Manual installation** in [`install.md`](install.md).
 | **What is on** | "what should I work on?" · "what's running?" · "what's left today?" |
 | **Adding** | "add stretching, 15 minutes" · "put 'call the plumber' in Home" |
 | **Doing** | "start the timer on the invoice" · "park that and pick up the report" · "tick it off" |
-| **Planning** | "push the dentist to Thursday" · "make the bins every Monday and Thursday" · "give that 45 minutes" |
+| **Planning** | "push the dentist to Thursday" · "make the bins every Monday and Thursday" · "give that 45 minutes" · "call the plumber @9" |
 | **Looking back** | "what's my streak?" · "where did my time go this week?" |
 
 ## Skills
