@@ -1,0 +1,36 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "daily-champ",
+  "version": "1.0.0",
+  "description": "Drive Daily Champ end to end — today and any other day, the areas board, the worklog lanes, cards and plans, timers, estimates, repeats, steps, sharing and the archive.",
+  "author": {
+    "name": "Deliverists.IO Sp. z o.o.",
+    "email": "office@deliverists.io",
+    "url": "https://deliverists.io"
+  },
+  "homepage": "https://daily-champ.deliverists.io",
+  "repository": "https://github.com/DeliveristsIO/daily-champ-skills",
+  "keywords": ["tasks", "productivity", "timer", "worklog", "planning", "daily-champ"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Daily Champ",
+        "shortDescription": "Your day, your board and your clock.",
+        "longDescription": "Read and change a Daily Champ account: what is on today, what is running right now, what is planned, what slipped and what somebody else is waiting on. Adds and moves tasks, starts and stops timers, sets estimates and deadlines, writes repeats, keeps steps and checklists, and shares work with the people who need it.",
+        "developerName": "Deliverists.IO Sp. z o.o.",
+        "category": "Productivity",
+        "capabilities": ["Read", "Write"],
+        "websiteURL": "https://daily-champ.deliverists.io",
+        "privacyPolicyURL": "https://daily-champ.deliverists.io/privacy",
+        "termsOfServiceURL": "https://daily-champ.deliverists.io/terms",
+        "defaultPrompt": [
+          "Ask Daily Champ what I should work on next.",
+          "Use Daily Champ to start the timer on the invoice.",
+          "Use Daily Champ to add 'call the plumber @9' to Home.",
+          "Ask Daily Champ where my time went this week."
+        ],
+        "brandColor": "#2b48c8"
+      }
+    }
+  }
+}
