@@ -201,8 +201,8 @@ task pull it into the worklog.
   with `sign_off_task(decision: "approve")` or reopens it with `"send_back"` and
   a reason. Every reason is written onto the task's thread.
 - **An @ name on a thread only reaches someone who can already see the task.**
-  `add_comment` naming anybody else tells nobody, quietly — `share_task` first,
-  then mention them.
+  Naming anybody else reaches nobody; `add_comment` says whose nudge went
+  nowhere, so `share_task` them and say it again.
 - **Two tools reach outside the account, and both say so.** `share_task` with an
   address nobody here has sends that person an invitation email. `share_link`
   mints a URL that shows the task to anyone holding it, with no sign-in. Say what
@@ -276,7 +276,7 @@ task pull it into the worklog.
 | `delete_checklist_item` | write | `item_id` | Take a line off a day's checklist for good. |
 | `respond_to_task` | write | `task_id` `decision` `reason?` | Answer a task somebody has asked you to do. Accepting takes it on; declining hands it back with the reason, which is written into its thread. Only the person it was given to can answer. |
 | `sign_off_task` | write | `task_id` `decision` `reason?` | Say whether work you asked somebody for is done. Approving closes it; sending it back reopens it with the reason on its thread. Only the person who asked can do either. |
-| `add_comment` | write | `id` `body` | Say something on a task's or a card's thread. Everyone it is shared with sees it, and anyone named with an @ is told. |
+| `add_comment` | write | `id` `body` | Say something on a task's or a card's thread. Everyone it is shared with sees it, and anyone named with an @ is told — naming somebody who cannot see it reaches nobody, and the answer says so. |
 | `delete_comment` | write | `comment_id` | Take back something you said. The line stays on the thread marked as deleted, so nobody is left answering a comment that vanished. Only its author can. |
 | `share_task` | write | `id` `with` `level?` | Let somebody else in on a task or a card, to look at or to work on. Somebody already in the workspace is told in the app; an email nobody here has is sent an invitation, so check the address before you call this. |
 | `unshare_task` | write | `id` `from` | Take somebody off a task or a card. They lose sight of it at once; anything they already wrote on its thread stays. |
