@@ -131,6 +131,12 @@ exists in the worklog files it under **Inbox** first, because a repeat belongs t
 the task and not to one sitting of it. `move_task` and `schedule_task` on a board
 task pull it into the worklog.
 
+`put_task_back` is the one that goes the other way: it takes the sitting off the
+lanes and off its day, and the task waits in its area again. Nothing is lost —
+the same sitting is picked up next time, with the time already tracked against
+it. Reach for it when somebody says a task is not for today after all, rather
+than deleting the sitting or archiving the task.
+
 ## Rules the app enforces, so you do not have to
 
 - **Several clocks may run at once.** `start_timer` leaves anything already
@@ -248,6 +254,7 @@ task pull it into the worklog.
 | `stop_timer` | write | `task_id?` | Stop the clock and bank what it counted. The task stays where it is — this does not finish it. |
 | `move_task` | write | `task_id` `lane` | Move a task between the worklog lanes. A board task that has never been pulled in is pulled in by this. Moving into a lane that starts work also starts it, and moving out of one puts it back down. |
 | `file_task` | write | `task_id` `area?` `card?` | Put a task in an area or on a card. This is where it is parked on the board, not which lane it sits in — move_task does lanes. |
+| `put_task_back` | write | `task_id` | Take a task off the worklog board and off its day, leaving it waiting in its area. The opposite of pulling one in: the sitting keeps the time already tracked against it, so picking the task up again carries on where it stopped. |
 | `schedule_task` | write | `task_id` `date` | Put a task on a day, pulling it in from the board if it is not in the worklog yet. A date in the future puts it down until that morning, when it comes back on its own. |
 | `copy_task` | write | `task_id` `date?` `each_day_for?` | Make another go at the same task on a later day. The copy starts fresh: no clock, nothing banked, not done. Use schedule_task instead to move the one that exists. |
 | `set_estimate` | write | `task_id` `minutes` | Say how long a task should take, in minutes. The clock counts down against it, and changing it re-arms the alert that fires when the time is up. |
