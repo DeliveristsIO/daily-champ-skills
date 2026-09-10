@@ -210,7 +210,9 @@ than deleting the sitting or archiving the task.
   Naming anybody else reaches nobody; `add_comment` says whose nudge went
   nowhere, so `share_task` them and say it again.
 - **Two tools reach outside the account, and both say so.** `share_task` with an
-  address nobody here has sends that person an invitation email. `share_link`
+  address nobody here has sends that person an invitation email; on the Free
+  plan that is refused and the refusal names the plan page, so do not retry it.
+  `share_link`
   mints a URL that shows the task to anyone holding it, with no sign-in. Say what
   will happen and get a yes before either; `share_link(revoke: true)` kills a
   link at once.
