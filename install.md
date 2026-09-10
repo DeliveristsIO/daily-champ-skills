@@ -25,7 +25,7 @@ server with no header and the sign-in happens in a browser.
 **Claude Code**
 
 ```bash
-claude mcp add --transport http --scope user daily-champ https://daily-champ.deliverists.io/mcp
+claude mcp add --transport http --scope user daily-champ https://www.dailychamp.net/mcp
 ```
 
 `--scope user` makes it available in every project. Drop it for this project
@@ -34,7 +34,7 @@ only.
 **Codex**
 
 ```bash
-codex mcp add daily-champ --url https://daily-champ.deliverists.io/mcp
+codex mcp add daily-champ --url https://www.dailychamp.net/mcp
 codex mcp login daily-champ
 ```
 
@@ -46,7 +46,7 @@ codex mcp login daily-champ
   "mcpServers": {
     "daily-champ": {
       "type": "http",
-      "url": "https://daily-champ.deliverists.io/mcp"
+      "url": "https://www.dailychamp.net/mcp"
     }
   }
 }
@@ -55,7 +55,7 @@ codex mcp login daily-champ
 **Other clients**
 
 - **OpenCode** — under `"mcp"` in `opencode.json`:
-  `"daily-champ": { "type": "remote", "url": "https://daily-champ.deliverists.io/mcp" }`
+  `"daily-champ": { "type": "remote", "url": "https://www.dailychamp.net/mcp" }`
 - **Cursor / VS Code** — the same block in `.cursor/mcp.json` or `.vscode/mcp.json`.
 - **An agent with no MCP support** — see the token fallback below.
 
@@ -99,7 +99,7 @@ The agent should call `get_today` and come back with the date, whether a clock
 is running, and the tasks planned. If it does not, check the raw surface:
 
 ```bash
-curl -s https://daily-champ.deliverists.io/mcp \
+curl -s https://www.dailychamp.net/mcp \
   -H "Authorization: Bearer $DAILY_CHAMP_TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
@@ -133,16 +133,16 @@ export DAILY_CHAMP_TOKEN='paste-it-here'
 ```bash
 # Claude Code
 claude mcp add --transport http --scope user daily-champ \
-  https://daily-champ.deliverists.io/mcp \
+  https://www.dailychamp.net/mcp \
   --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"
 
 # Codex — reads the variable at call time, so the token never lands in config.toml
 codex mcp add daily-champ \
-  --url https://daily-champ.deliverists.io/mcp \
+  --url https://www.dailychamp.net/mcp \
   --bearer-token-env-var DAILY_CHAMP_TOKEN
 
 # stdio-only agents
-npx mcp-remote https://daily-champ.deliverists.io/mcp \
+npx mcp-remote https://www.dailychamp.net/mcp \
   --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"
 ```
 

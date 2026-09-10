@@ -3,7 +3,7 @@
   "mcpServers": {
     "daily-champ": {
       "type": "streamable-http",
-      "url": "https://daily-champ.deliverists.io/mcp"
+      "url": "https://www.dailychamp.net/mcp"
     }
   }
 }

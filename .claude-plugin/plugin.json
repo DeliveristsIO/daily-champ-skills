@@ -8,13 +8,13 @@
     "email": "office@deliverists.io",
     "url": "https://deliverists.io"
   },
-  "homepage": "https://deliverists.io",
+  "homepage": "https://www.dailychamp.net",
   "repository": "https://github.com/DeliveristsIO/daily-champ-skills",
   "keywords": ["tasks", "productivity", "timer", "worklog", "mcp", "daily-champ"],
   "mcpServers": {
     "daily-champ": {
       "type": "http",
-      "url": "https://daily-champ.deliverists.io/mcp"
+      "url": "https://www.dailychamp.net/mcp"
     }
   }
 }

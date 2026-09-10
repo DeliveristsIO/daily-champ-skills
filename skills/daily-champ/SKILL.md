@@ -79,9 +79,9 @@ the sign-in to the human — that part is theirs and cannot be automated.
 nothing lands in a config file, and the session renews itself.
 
 1. **Add the server**, no header:
-   - Claude Code — `claude mcp add --transport http --scope user daily-champ https://daily-champ.deliverists.io/mcp`
-   - Codex — `codex mcp add daily-champ --url https://daily-champ.deliverists.io/mcp`, then `codex mcp login daily-champ`
-   - OpenCode — under `"mcp"` in `opencode.json`: `"daily-champ": { "type": "remote", "url": "https://daily-champ.deliverists.io/mcp" }`
+   - Claude Code — `claude mcp add --transport http --scope user daily-champ https://www.dailychamp.net/mcp`
+   - Codex — `codex mcp add daily-champ --url https://www.dailychamp.net/mcp`, then `codex mcp login daily-champ`
+   - OpenCode — under `"mcp"` in `opencode.json`: `"daily-champ": { "type": "remote", "url": "https://www.dailychamp.net/mcp" }`
 2. **Restart the session**, then tell the human to run `/mcp`, pick
    **daily-champ**, choose **Authenticate**, sign in and authorize. Wait for
    them — you cannot do this step.
@@ -91,9 +91,9 @@ nothing lands in a config file, and the session renews itself.
 to open Daily Champ → **Settings** → **Devices** → new device token, copy it once,
 and `export DAILY_CHAMP_TOKEN=…`. Then add the server with the header:
 
-- Claude Code — `claude mcp add --transport http --scope user daily-champ https://daily-champ.deliverists.io/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"`
-- Codex — `codex mcp add daily-champ --url https://daily-champ.deliverists.io/mcp --bearer-token-env-var DAILY_CHAMP_TOKEN`
-- A client with no MCP support — `npx mcp-remote https://daily-champ.deliverists.io/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"` as the stdio command.
+- Claude Code — `claude mcp add --transport http --scope user daily-champ https://www.dailychamp.net/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"`
+- Codex — `codex mcp add daily-champ --url https://www.dailychamp.net/mcp --bearer-token-env-var DAILY_CHAMP_TOKEN`
+- A client with no MCP support — `npx mcp-remote https://www.dailychamp.net/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"` as the stdio command.
 
 Both credentials go on the same `Authorization: Bearer` header and reach the
 same tools. A token belongs to one person and one device; revoking it under
@@ -108,7 +108,7 @@ Stateless streamable HTTP. No `Mcp-Session-Id` is issued or required, and
 `initialize` is optional — a bare `tools/call` POST works on its own:
 
 ```bash
-curl -s https://daily-champ.deliverists.io/mcp \
+curl -s https://www.dailychamp.net/mcp \
   -H "Authorization: Bearer $DAILY_CHAMP_TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \

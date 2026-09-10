@@ -1,6 +1,6 @@
 # Daily Champ skills
 
-Talk to [Daily Champ](https://daily-champ.deliverists.io) from Claude Code,
+Talk to [Daily Champ](https://www.dailychamp.net) from Claude Code,
 Codex, Cursor and anything else that speaks MCP.
 
 This repository is private. Every command below reads it over your own GitHub

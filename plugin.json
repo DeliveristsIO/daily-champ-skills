@@ -8,7 +8,7 @@
     "email": "office@deliverists.io",
     "url": "https://deliverists.io"
   },
-  "homepage": "https://daily-champ.deliverists.io",
+  "homepage": "https://www.dailychamp.net",
   "repository": "https://github.com/DeliveristsIO/daily-champ-skills",
   "keywords": ["tasks", "productivity", "timer", "worklog", "planning", "daily-champ"],
   "extensions": {
@@ -20,9 +20,9 @@
         "developerName": "Deliverists.IO Sp. z o.o.",
         "category": "Productivity",
         "capabilities": ["Read", "Write"],
-        "websiteURL": "https://daily-champ.deliverists.io",
-        "privacyPolicyURL": "https://daily-champ.deliverists.io/privacy",
-        "termsOfServiceURL": "https://daily-champ.deliverists.io/terms",
+        "websiteURL": "https://www.dailychamp.net",
+        "privacyPolicyURL": "https://www.dailychamp.net/privacy",
+        "termsOfServiceURL": "https://www.dailychamp.net/terms",
         "defaultPrompt": [
           "Ask Daily Champ what I should work on next.",
           "Use Daily Champ to start the timer on the invoice.",
