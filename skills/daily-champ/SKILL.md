@@ -29,10 +29,12 @@ nothing lands in a config file, and the session renews itself.
 1. **Add the server**, no header:
    - Claude Code — `claude mcp add --transport http --scope user daily-champ https://www.dailychamp.net/mcp`
    - Codex — `codex mcp add daily-champ --url https://www.dailychamp.net/mcp`, then `codex mcp login daily-champ`
-   - OpenCode — under `"mcp"` in `opencode.json`: `"daily-champ": { "type": "remote", "url": "https://www.dailychamp.net/mcp" }`
-2. **Restart the session**, then tell the human to run `/mcp`, pick
-   **daily-champ**, choose **Authenticate**, sign in and authorize. Wait for
-   them — you cannot do this step.
+   - OpenCode — under `"mcp"` in `opencode.json`: `"daily-champ": { "type": "remote", "url": "https://www.dailychamp.net/mcp" }`, then run `opencode mcp auth daily-champ`
+   - pi — pi has no built-in MCP, so `pi install npm:pi-mcp-adapter`, restart, then under `"mcpServers"` in `.mcp.json` (this project) or `~/.config/mcp/mcp.json` (every project): `"daily-champ": { "url": "https://www.dailychamp.net/mcp" }`
+2. **Restart the session**, then tell the human to sign in — you cannot do this
+   part. Claude Code, Codex and pi: run `/mcp`, pick **daily-champ**, choose
+   **Authenticate**, sign in and authorize. OpenCode: `opencode mcp auth
+   daily-champ` opens the browser for them. Wait for them.
 3. **Verify** with `get_today`.
 
 **Or a token**, for a headless machine or a client with no OAuth. Ask the human
@@ -41,6 +43,8 @@ and `export DAILY_CHAMP_TOKEN=…`. Then add the server with the header:
 
 - Claude Code — `claude mcp add --transport http --scope user daily-champ https://www.dailychamp.net/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"`
 - Codex — `codex mcp add daily-champ --url https://www.dailychamp.net/mcp --bearer-token-env-var DAILY_CHAMP_TOKEN`
+- OpenCode — the same `"remote"` block with the header: `"daily-champ": { "type": "remote", "url": "https://www.dailychamp.net/mcp", "oauth": false, "headers": { "Authorization": "Bearer {env:DAILY_CHAMP_TOKEN}" } }`
+- pi — `"daily-champ": { "url": "https://www.dailychamp.net/mcp", "headers": { "Authorization": "Bearer ${DAILY_CHAMP_TOKEN}" } }` in the same `mcpServers` block
 - A client with no MCP support — `npx mcp-remote https://www.dailychamp.net/mcp --header "Authorization: Bearer $DAILY_CHAMP_TOKEN"` as the stdio command.
 
 Both credentials go on the same `Authorization: Bearer` header and reach the

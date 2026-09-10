@@ -38,6 +38,46 @@ codex mcp add daily-champ --url https://www.dailychamp.net/mcp
 codex mcp login daily-champ
 ```
 
+**OpenCode**
+
+```bash
+opencode mcp add daily-champ --type remote --url https://www.dailychamp.net/mcp
+opencode mcp auth daily-champ
+```
+
+Or by hand under `"mcp"` in `opencode.json` (global:
+`~/.config/opencode/opencode.json`):
+
+```json
+{
+  "mcp": {
+    "daily-champ": { "type": "remote", "url": "https://www.dailychamp.net/mcp" }
+  }
+}
+```
+
+**pi** — pi has no built-in MCP, so the adapter is the way in:
+
+```bash
+pi install npm:pi-mcp-adapter
+```
+
+Restart pi, then add the server under `"mcpServers"` in `.mcp.json` (this
+project) or `~/.config/mcp/mcp.json` (every project):
+
+```json
+{
+  "mcpServers": {
+    "daily-champ": { "url": "https://www.dailychamp.net/mcp" }
+  }
+}
+```
+
+The adapter registers one `mcp` proxy tool; call it with
+`{ "search": "get_today" }` to discover, then
+`{ "tool": "get_today", "args": {} }` to call. Sign-in is browser OAuth like
+the others: `/mcp` → **daily-champ** → authenticate.
+
 **By hand** — `~/.claude.json` under `mcpServers`, or a project-level
 `.mcp.json`:
 
@@ -70,9 +110,9 @@ npx skills add DeliveristsIO/daily-champ-skills
 ```
 
 That installs the skill using the [Agent Skills](https://agentskills.io)
-standard, detecting the agent for you (Claude Code, Cursor, Codex, VS Code,
-Goose, Amp and others). Use `-a claude-code` to name one, `-g` to install
-globally. Check it landed with `npx skills list`.
+standard, detecting the agent for you (Claude Code, OpenCode, pi, Cursor, Codex,
+VS Code, Goose, Amp and others). Use `-a claude-code` to name one, `-g` to
+install globally. Check it landed with `npx skills list`.
 
 **Or, in Claude Code, do steps 2 and 3 at once** — the plugin carries the server
 config with it:
@@ -140,6 +180,21 @@ claude mcp add --transport http --scope user daily-champ \
 codex mcp add daily-champ \
   --url https://www.dailychamp.net/mcp \
   --bearer-token-env-var DAILY_CHAMP_TOKEN
+
+# OpenCode
+opencode mcp add daily-champ --type remote --url https://www.dailychamp.net/mcp \
+  --header "Authorization: Bearer {env:DAILY_CHAMP_TOKEN}"
+# (or by hand: the "remote" block with "oauth": false and the header, see SKILL.md)
+
+# pi — into ~/.config/mcp/mcp.json or .mcp.json
+{
+  "mcpServers": {
+    "daily-champ": {
+      "url": "https://www.dailychamp.net/mcp",
+      "headers": { "Authorization": "Bearer ${DAILY_CHAMP_TOKEN}" }
+    }
+  }
+}
 
 # stdio-only agents
 npx mcp-remote https://www.dailychamp.net/mcp \

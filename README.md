@@ -1,7 +1,7 @@
 # Daily Champ skills
 
-Talk to [Daily Champ](https://www.dailychamp.net) from Claude Code,
-Codex, Cursor and anything else that speaks MCP.
+Talk to [Daily Champ](https://www.dailychamp.net) from Claude Code, Codex,
+OpenCode, pi and anything else that speaks MCP.
 
 This repository is private. Every command below reads it over your own GitHub
 access, so `gh auth status` should be green and your SSH key loaded first.
