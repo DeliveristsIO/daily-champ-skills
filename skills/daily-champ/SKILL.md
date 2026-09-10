@@ -1,63 +1,11 @@
 ---
 name: daily-champ
 description: |
-  Drive Daily Champ through its MCP server — the whole app, not a corner of it:
-  today and any other day, the areas board, the worklog lanes, cards and their
-  plans, timers, estimates, repeats, steps, checklists, sharing and the archive.
-  Use for ANY question about what to work on, what is running right now, what is
-  planned, what slipped, what got done, or what somebody else is waiting on.
-triggers:
-  # Direct
-  - daily champ
-  - /daily-champ
-  # What is on
-  - what should I work on
-  - what is on today
-  - what am I working on
-  - what is running
-  - my day
-  - my board
-  - my worklog
-  # Adding
-  - add a task
-  - new task
-  - put it on my list
-  - plan tomorrow
-  - plan my day
-  # Doing
-  - start the timer
-  - stop the timer
-  - start the clock
-  - mark done
-  - tick it off
-  - reopen
-  - move to in progress
-  - move to todo
-  - park it
-  # Planning
-  - how long will it take
-  - set an estimate
-  - repeat every
-  - every monday
-  - remind me at
-  - due at
-  - give it a time
-  - push it to
-  - archive it
-  - plan this card
-  - start a card
-  - break it into steps
-  # People
-  - share this with
-  - ask them to
-  - sign it off
-  - who is waiting on me
-  # Looking back
-  - my streak
-  - what did I get done
-  - where did my time go
-invocable: true
-argument-hint: "[action] [args...]"
+  Read and change Daily Champ through its MCP server: today and other days, the
+  areas board, worklog lanes, cards and plans, timers, estimates, repeats, steps,
+  checklists, sharing, and the archive. Use for questions about what to work on,
+  what is running, planned, late, or done, and for requests to create, move,
+  schedule, complete, share, or review Daily Champ work.
 ---
 
 # Daily Champ
@@ -335,7 +283,8 @@ as well as the hour.
 they stand; anything in progress from an earlier day has already been carried
 onto today by the app. `get_stats` gives the streak and where the time went.
 
-**Start a project.** `create_card` opens a 90-day window. Then `plan_card` with
+**Start a project.** `create_card` opens a 90-day window; on the Free plan a fourth
+active card is refused and the refusal names the plan page, so do not retry it. Then `plan_card` with
 no `tasks` drafts a plan from the app's own coach and saves nothing — read it
 back, and call `plan_card` again with the tasks they kept. Today's and
 tomorrow's become real tasks; the rest arrive each morning.

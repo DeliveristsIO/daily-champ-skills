@@ -1,0 +1,13 @@
+interface:
+  display_name: "Daily Champ"
+  short_description: "Your day, your board and your clock."
+  brand_color: "#2B48C8"
+  default_prompt: "Use $daily-champ to tell me what I should work on next."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "daily-champ"
+      description: "Read and update the user's Daily Champ account"
+      transport: "streamable_http"
+      url: "https://www.dailychamp.net/mcp"

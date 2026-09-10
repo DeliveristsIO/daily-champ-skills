@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "daily-champ",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Drive Daily Champ end to end — today and any other day, the areas board, the worklog lanes, cards and plans, timers, estimates, repeats, steps, sharing and the archive.",
   "author": {
     "name": "Deliverists.IO Sp. z o.o.",
@@ -26,10 +26,11 @@
         "defaultPrompt": [
           "Ask Daily Champ what I should work on next.",
           "Use Daily Champ to start the timer on the invoice.",
-          "Use Daily Champ to add 'call the plumber @9' to Home.",
-          "Ask Daily Champ where my time went this week."
+          "Use Daily Champ to add 'call the plumber @9' to Home."
         ],
-        "brandColor": "#2b48c8"
+        "brandColor": "#2b48c8",
+        "composerIcon": "./assets/icon.svg",
+        "logo": "./assets/icon.svg"
       }
     }
   }

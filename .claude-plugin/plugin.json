@@ -1,7 +1,7 @@
 {
   "name": "daily-champ",
   "displayName": "Daily Champ",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Your day, your board and your clock — read and change them from the terminal through the Daily Champ MCP server.",
   "author": {
     "name": "Deliverists.IO Sp. z o.o.",
