@@ -176,9 +176,11 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
   in — checklists and notes — and `apply_template` lays a fresh one out. A note
   is the first line on a text section, so it is written with
   `add_checklist_item` and reworded with `update_checklist_item`.
-- **A day's status is not yours to set.** Pending today, scheduled ahead, win or
-  loss behind, worked out from its own tasks every time it is saved. Finish the
-  tasks and the day follows.
+- **A day's status is not yours to set.** A day is won by keeping all five of its
+  commitments. It closes at the person's own midnight, every promise still open
+  is marked missed, and the result is frozen from then on. Work finished outside
+  the five still shows in `get_today`, under the five, but does not count toward
+  the day.
 
 - **Work handed to someone runs at both ends.** `update_task(assignee:)` asks
   them; they answer with `respond_to_task`, and declining needs a reason.
