@@ -93,7 +93,7 @@ to. Reach for either rather than deleting the sitting or archiving the task.
 
 A day is not a list of everything you might do. It holds **the tasks the person
 committed to finish before midnight** — five by default, and they set their own
-number in Settings. Keep them all and the day is a win, keep fewer and it is a
+number in Settings. A change takes effect the next morning, not the one already under way. Keep them all and the day is a win, keep fewer and it is a
 loss, commit nothing and it is empty. `get_today` says where the day stands —
 `3 of 5 kept · 4 of 5 chosen` — and how much room is left.
 
