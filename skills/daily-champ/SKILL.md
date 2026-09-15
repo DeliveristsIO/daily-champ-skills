@@ -132,12 +132,11 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
   reports minutes.
 - **A time written into a title is the hour it is due.** `@9` or `@16:45`
   anywhere in a title — on `create_task`, or on a rename — comes out of the name
-  and becomes when the task is due. A task with no day of its own is put down on
-  the first day it can still happen: today while the hour is ahead, tomorrow once
-  it has gone by. A task already sitting on a day keeps that day and takes the
-  hour on it. The 24-hour clock only, so `@25` and an address like `bob@12` are
-  left alone. `update_task(deadline:)` is the explicit form, for when the day
-  matters as much as the hour.
+  and is kept on the task. On a task with a day the hour lands on that day. On a
+  board task the hour waits until a day is picked for it — `schedule_task` — and
+  the day picked keeps its hour even when that hour has gone by. The 24-hour clock
+  only, so `@25` and an address like `bob@12` are left alone. `update_task(deadline:)`
+  is the explicit form, for when the day matters as much as the hour.
 - **A deadline nudges the person ten minutes before it.** One push, to whatever
   they have turned notifications on for under **Settings** — you cannot turn that
   on for them, and the button beside it sends a test one so they can prove it
@@ -314,12 +313,13 @@ Days are numbers, Sunday is 0. `interval: 2` makes it every other week,
 no `unit` and no `days` stops the repeat. A repeating task stays one task on the
 board and comes back with a fresh sitting on each day it is due.
 
-**Give it a time.** `create_task(title: "Call the plumber @9")` puts the task on
-the first day nine o'clock can still happen and has it nudge the person ten
-minutes before. `update_task(task_id: …, title: "Call the plumber @16:45")` does
+**Give it a time.** `create_task(title: "Call the plumber @9")` commits the task to
+today at nine o'clock and has it nudge the person ten minutes before. `update_task(task_id: …, title: "Call the plumber @16:45")` does
 the same to a task that already exists, and
 `update_task(task_id: …, deadline: "2026-09-15T09:00")` is the way to say the day
-as well as the hour.
+as well as the hour. On a parked board task the hour waits in its name until
+`schedule_task` picks the day, and that day keeps the hour even when it has gone
+by.
 
 **Catch up on what slipped.** `get_board(include_done: false)` shows the lanes as
 they stand; anything in progress from an earlier day has already been carried
