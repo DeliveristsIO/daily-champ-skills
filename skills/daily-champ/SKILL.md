@@ -311,15 +311,16 @@ Days are numbers, Sunday is 0. `interval: 2` makes it every other week,
 `unit: "month"` with `monthday: "last"` takes the last day of the month, and
 `at`, `until_on` and `times` add a reminder time and an ending. Calling it with
 no `unit` and no `days` stops the repeat. A repeating task stays one task on the
-board and comes back with a fresh sitting on each day it is due.
+board and comes back with a fresh sitting on each day it is due, owing each of those
+days the hour in its name.
 
 **Give it a time.** `create_task(title: "Call the plumber @9")` commits the task to
-today at nine o'clock and has it nudge the person ten minutes before. `update_task(task_id: …, title: "Call the plumber @16:45")` does
-the same to a task that already exists, and
-`update_task(task_id: …, deadline: "2026-09-15T09:00")` is the way to say the day
-as well as the hour. On a parked board task the hour waits in its name until
-`schedule_task` picks the day, and that day keeps the hour even when it has gone
-by.
+today at nine o'clock and has it nudge the person ten minutes before.
+`update_task(task_id: …, title: "Call the plumber @16:45")` does the same to a task
+that already exists, and `update_task(task_id: …, deadline: "2026-09-15T09:00")` is
+the way to say the day as well as the hour. On a parked board task the hour waits in
+its name until `schedule_task` picks the day, and that day keeps the hour even when it
+has gone by.
 
 **Catch up on what slipped.** `get_board(include_done: false)` shows the lanes as
 they stand; anything in progress from an earlier day has already been carried
