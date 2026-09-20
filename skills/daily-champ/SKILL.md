@@ -89,27 +89,30 @@ is picked up next time, with the time already tracked against it. It does not
 touch the day: `withdraw_task` is what takes a task off the day it was committed
 to. Reach for either rather than deleting the sitting or archiving the task.
 
-## Today is five commitments
+## Today holds as many commitments as the person set
 
-A day is not a list of everything you might do. It holds **five tasks the person
-committed to finish before midnight**: keep all five and the day is a win, keep
-fewer and it is a loss, commit nothing and it is empty. `get_today` says where
-the day stands — `3 of 5 kept · 4 of 5 chosen` — and how much room is left.
+A day is not a list of everything you might do. It holds **the tasks the person
+committed to finish before midnight** — five by default, and they set their own
+number in Settings. Keep them all and the day is a win, keep fewer and it is a
+loss, commit nothing and it is empty. `get_today` says where the day stands —
+`3 of 5 kept · 4 of 5 chosen` — and how much room is left.
 
 - **Only a person's choice puts a task on a day.** `schedule_task` and
   `create_task` commit; moving a task between lanes, starting it and running its
   timer never do. A task can be worked on for days and committed on only one.
-- **Five is the ceiling.** A sixth is refused with *"Today already holds five"*.
-  `plan_day` commits up to the room and says what it left out, and `create_task`
-  leaves the extra task in the worklog instead of on the day.
-- **The fifth commitment locks the list.** Taking one back after that is
-  recorded as withdrawn, and the day can no longer be won. Say so before you
-  swap something out on the person's behalf.
+- **The list has a ceiling.** A task beyond it is refused as *"…already holds
+  …"*, naming the number. `plan_day` commits up to the room and says what it left
+  out, and `create_task` leaves the extra task in the worklog instead of on the
+  day.
+- **The last open commitment locks the list.** Taking one back after that is
+  recorded as withdrawn, and the day can no longer be won. Completing a task
+  keeps its record but frees its slot for a replacement the person chooses; say
+  so before you swap something out on their behalf.
 - **Midnight is the person's own.** Each unfinished commitment is recorded as
   missed on the day it was made; nothing rolls over by itself, and a closed day's
   result never changes. Finishing yesterday's task today does not win yesterday.
-- **Work outside the five still counts as work.** `get_today` lists it under
-  *Also done today, outside the five*. Do not present it as part of the score.
+- **Work outside the list still counts as work.** `get_today` lists it under
+  *Also done today · not counted*. Do not present it as part of the score.
 
 ## Rules the app enforces, so you do not have to
 
@@ -216,7 +219,7 @@ the day stands — `3 of 5 kept · 4 of 5 chosen` — and how much room is left.
 
 | Tool | | Arguments | What it does |
 | --- | --- | --- | --- |
-| `get_today` | read | — | What today comes to: the five tasks committed to it, which were kept, what is still open, the clock that is running, and how much room is left. Start here when asked what to work on. |
+| `get_today` | read | — | What today comes to: the tasks committed to it, which were kept, what is still open, the clock that is running, and how much room is left. Start here when asked what to work on. |
 | `get_board` | read | `include_done?` `include_archived?` | The whole board: every area with the tasks parked in it, and the worklog lanes with the work in hand. Use it to see what exists before adding something new — every heading carries the id you need to change it. |
 | `search_tasks` | read | `query` | Find a task, an area or a card by name. Unfinished work is always findable; finished work drops out after a week. |
 | `get_task` | read | `task_id` | Everything about one task, from either end: where it lives on the board, where it sits in the worklog, its estimate, its clock, its repeat, its steps, who it is shared with and what has been said on it. |
@@ -224,7 +227,7 @@ the day stands — `3 of 5 kept · 4 of 5 chosen` — and how much room is left.
 | `get_cards` | read | `card?` | Cards are the projects with an end: a title, a window of days, and a plan spread across them. With no id this lists them; with one it opens that card, its plan, its tasks and its reviews. |
 | `get_day` | read | `date?` `thread?` | One day in full: what was committed to it and how each promise ended, and the sections it is laid out in — checklists and notes both. Ask for the thread to see what the day's coach has said. |
 | `list_notifications` | read | `unread_only?` `limit?` | What has happened that involves other people: work shared with you, asked of you, accepted, declined or signed off. Reading them here does not mark them read. |
-| `create_task` | write | `title` `area?` `date?` `estimate_minutes?` `lane?` | Add a task. With no area it is committed to a day, or left in the worklog when that day already holds five; with an area it is parked on the board until it is pulled in. Several lines in one title become several tasks. |
+| `create_task` | write | `title` `area?` `date?` `estimate_minutes?` `lane?` | Add a task. With no area it is committed to a day, or left in the worklog when that day is already at its limit; with an area it is parked on the board until it is pulled in. Several lines in one title become several tasks. |
 | `update_task` | write | `task_id` `title?` `description?` `notes?` `note?` `tag?` `deadline?` `assignee?` | Change a task's wording, its deadline, its tag or who it is for. A rename carries across both halves on its own, so it does not matter which id you hold. |
 | `complete_task` | write | `task_id` | Tick a task off. Both halves finish together, and a running clock is stopped and banked as part of the same move. |
 | `reopen_task` | write | `task_id` | Put a finished task back to work. It returns to the lane its state belongs in, not necessarily the one it left. |
@@ -233,7 +236,7 @@ the day stands — `3 of 5 kept · 4 of 5 chosen` — and how much room is left.
 | `move_task` | write | `task_id` `lane` | Move a task between the worklog lanes. A board task that has never been pulled in is pulled in by this. Moving into a lane that starts work also starts it, and moving out of one puts it back down. |
 | `file_task` | write | `task_id` `area?` `card?` | Put a task in an area or on a card. This is where it is parked on the board, not which lane it sits in — move_task does lanes. |
 | `put_task_back` | write | `task_id` | Take a task off the worklog board, leaving it waiting in its area. The opposite of pulling one in: the sitting keeps the time already tracked against it, so picking the task up again carries on where it stopped. Its commitment stays: one committed to today is put down in To do, since today's list still holds it. |
-| `schedule_task` | write | `task_id` `date` | Commit a task to a day, pulling it in from the board if it is not in the worklog yet. Its lane and clock are left alone. A day holds five commitments; a day that has ended and a finished task are refused. |
+| `schedule_task` | write | `task_id` `date` | Commit a task to a day, pulling it in from the board if it is not in the worklog yet. Its lane and clock are left alone. A day holds a fixed list of commitments, as many as the user set in Settings; a day that has ended and a finished task are refused. |
 | `withdraw_task` | write | `task_id` | Take a task off the day it is committed to. It stays in the worklog with its lane, clock and time. On a day that has begun the promise stays on the record as withdrawn, and that day can no longer be won; on a later day's draft it leaves no trace. |
 | `copy_task` | write | `task_id` `date?` `each_day_for?` | Make another go at the same task on a later day. The copy starts fresh: no clock, nothing banked, not done. Use schedule_task instead to move the one that exists. |
 | `set_estimate` | write | `task_id` `minutes` | Say how long a task should take, in minutes. The clock counts down against it, and changing it re-arms the alert that fires when the time is up. |
@@ -254,7 +257,7 @@ the day stands — `3 of 5 kept · 4 of 5 chosen` — and how much room is left.
 | `delete_card` | write | `card` | Destroy a card and everything written out of it. Its tasks go too, and so do their sittings, its plan, its reviews and its coach thread. To stop a card without losing any of that, set its status to abandoned instead. |
 | `plan_card` | write | `card` `tasks?` | Draft or save a card's plan. Called with no tasks it asks the app's own coach for a draft and hands it back without saving anything, so it can be shown to the person first. Called with tasks it saves them, and writes today's and tomorrow's into real tasks; the rest are written each morning as they come. |
 | `review_card` | write | `card` `suggest?` `period_start?` `period_end?` `progress_rating?` `are_items_effective?` `what_worked?` `what_to_improve?` `notes?` | Write a review of how a card is going over a stretch of days. Ask the app's own coach for something to react to first with suggest, which drafts a review without saving it. |
-| `plan_day` | write | `date?` `tasks?` | Draft or fill a day. Called with no tasks it asks the app's own day coach what to commit to, given what is already there, and saves nothing. Called with tasks it commits them, up to the five a day holds. |
+| `plan_day` | write | `date?` `tasks?` | Draft or fill a day. Called with no tasks it asks the app's own day coach what to commit to, given what is already there, and saves nothing. Called with tasks it commits them, up to the list a day holds. |
 | `apply_template` | write | `template?` `date?` | Lay a day out from a template — its sections and whatever they always start with. With no template named this lists the templates there are and changes nothing. Applying one replaces the sections already on that day. |
 | `delete_section` | write | `section_id` | Take a section off a day, with everything on its checklist. Tasks are not in a section — delete_task takes those. |
 | `add_checklist_item` | write | `section_id` `contents` | Put something on one of a day's checklists — the sections a day is laid out in, as against the tasks on it. |
@@ -276,7 +279,8 @@ the day stands — `3 of 5 kept · 4 of 5 chosen` — and how much room is left.
 ## Workflows
 
 **Plan my day.** `get_today` for what is already committed and how much room is
-left; `get_board` for what is waiting. Together you choose **five** — no more.
+left; `get_board` for what is waiting. Together you choose the day's
+commitments — no more than its limit.
 Add what is missing with `create_task`, and commit anything from the board with
 `schedule_task(task_id: …, date: <today>)`. Give each one a `set_estimate` so
 the clock has something to count against.
@@ -347,8 +351,8 @@ to somebody else.
   nowhere to put an estimate; the refusal tells you to `schedule_task` it first.
 - **`create_task` with an `area` does not put it on a day.** It parks it on the
   board. Leave `area` out to commit it to today — or write a time into the title,
-  which files it in the area and commits it as well. Either way, a day that
-  already holds five keeps the new task in the worklog instead, and says so.
+  which files it in the area and commits it as well. Either way, a day already
+  at its limit keeps the new task in the worklog instead, and says so.
 - **Several titles in one call.** `create_task` splits on newlines and
   semicolons, so a pasted list becomes a list of tasks. It returns one line per
   task made.
