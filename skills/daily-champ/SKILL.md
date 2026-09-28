@@ -248,7 +248,7 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
 | `delete_step` | write | `step_id` | Take a step off a task for good. |
 | `create_area` | write | `title` `color?` | Add a column to the board. An area is a standing part of someone's life — Home, Work, Health — not a project with an end, which is what a card is for. |
 | `update_area` | write | `area` `title?` `color?` | Rename an area or change its colour. |
-| `delete_area` | write | `area` | Take a column off the board. Nothing in it is lost — every task in it moves to the Inbox first. The Inbox itself cannot go. |
+| `delete_area` | write | `area` | Take a column off the board. Nothing in it is lost — every task in it moves to the Inbox first. Deleting the Inbox hands its tasks to a fresh Inbox. |
 | `create_lane` | write | `name` `starts_work?` `finishes_work?` | Add a column to the worklog. A lane is placement, and its two flags are what make it mean something: a lane that starts work starts the task's clock running against the WIP limit, and one that finishes work ticks the task off. |
 | `update_lane` | write | `lane` `name?` `starts_work?` `finishes_work?` | Rename a worklog lane or change what landing in it means. Changing the flags does not re-file the work already sitting there; it changes what the next move into it does. |
 | `delete_lane` | write | `lane` | Take a lane off the worklog. The work in it is not lost — each task moves to whichever remaining lane matches where it had got to. The last lane cannot go. |
