@@ -154,9 +154,11 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
   to the first starting lane if deleted or made ineligible. Selection leaves
   task state and placement unchanged; work outside today remains visible on
   Board and Worklog, but is hidden in Today focus. Worklog focus hides Areas completely.
-On the board, `F` expands the focused area or worklog lane to the available page width; pressing it again restores the previous view and focus. Task modal fields autosave with a shared Saved / Saving… / Not saved indicator and Retry. Closing waits for pending edits.
+On the board, `F` expands the focused area or worklog lane to the same centered width as Today and Calendar; pressing it again restores the previous view and focus. Task modal fields autosave with a shared Saved / Saving… / Not saved indicator and Retry. Closing waits for pending edits.
 
 The task coach answers questions before proposing actions and treats corrections as updated context. It can suggest steps, separate tasks or a card, but coaching replies do not create them.
+
+Task rows keep details and their main action visible; labelled secondary actions live in the ⋯ menu. Archive and Delete are separated, and Delete opens the same confirmation dialog on Areas, Worklog and cards. Commit to Today selects the chosen Today lane as well as the date.
 
 - **Areas and lanes lose nothing when deleted.** `delete_area` hands its tasks
   to the Inbox, `delete_lane` moves its work to whichever lane matches where
