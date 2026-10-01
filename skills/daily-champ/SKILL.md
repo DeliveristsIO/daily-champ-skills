@@ -365,6 +365,8 @@ to somebody else.
   stops the clock too.
 - **`set_estimate` needs a sitting.** A board task that was never pulled in has
   nowhere to put an estimate; the refusal tells you to `schedule_task` it first.
+- **`file_task` is what `m`, `H`/`L` and a drag do on screen.** On the board,
+  `m` moves the focused task to the next area and `H`/`L` walk it left and right.
 - **`create_task` with an `area` does not put it on a day.** It parks it on the
   board. Leave `area` out to commit it to today — or write a time into the title,
   which files it in the area and commits it as well. Either way, a day already
