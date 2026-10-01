@@ -120,10 +120,9 @@ unfinished and it is a loss, remove them all and it is empty. `get_today` says w
 
 - **Several clocks may run at once.** `start_timer` leaves anything already
   running alone, and the result names what is still running beside it.
-- **Work in progress is capped.** Moving into a starting lane when it is full
-  comes back as *"In progress is full at 7. Finish something before starting
-  more."* — a sentence, not an error. Do not retry it; finish something or pick
-  another lane.
+- **The Today lane is the day's list.** Moving into it when the day is full
+  comes back as a sentence naming the daily limit, not an error. Do not retry
+  it; finish or withdraw something first.
 - **Ending work stops the clock.** Ticking a task off, or moving it out of a
   starting lane, banks the running time and tells you how much.
 - **A date says when, not what.** `schedule_task` to a day ahead commits the
@@ -147,7 +146,7 @@ unfinished and it is a loss, remove them all and it is empty. `get_today` says w
   area the way the person is looking at it: what is still waiting first, then
   whatever has been pulled into a lane, then what is done. The top of an area is
   always what to pick up next.
-- **Lanes are the user's own rows**, not an enum. `todo`, `in_progress` and
+- **Lanes are the user's own rows**, not an enum. `todo`, `today` and
   `done` always resolve, and so does any lane the user has named themselves.
   `create_lane` adds one. A starting lane commits tasks to Today; a finishing
   lane completes them. `update_lane(use_as_today: true)` configures and selects
@@ -306,9 +305,8 @@ the clock has something to count against.
 **What am I working on?** `get_today`. The first line after the date says
 `Running now:` with the elapsed and the budget, or `No clock running.`
 
-**Start on something.** `move_task(task_id: …, lane: "in_progress")` then
-`start_timer(task_id: …)`. If the lane refuses, say which lane is full and offer
-to finish something.
+**Start on something.** `move_task(task_id: …, lane: "today")` then
+`start_timer(task_id: …)`. If the day is full, say so and offer to finish or withdraw something.
 
 **Park this and pick up that.** `move_task(task_id: …, lane: "todo")` on the
 first — that alone stops its clock and banks the time — then move and start the
@@ -340,8 +338,7 @@ its name until `schedule_task` picks the day, and that day keeps the hour even w
 has gone by.
 
 **Catch up on what slipped.** `get_board(include_done: false)` shows the lanes as
-they stand; anything in progress from an earlier day has already been carried
-onto today by the app. `get_stats` gives the streak and where the time went.
+they stand; anything unfinished from an earlier day went back to To do at midnight. `get_stats` gives the streak and where the time went.
 
 **Start a project.** `create_area` makes its place on the board. `ask_coach`
 with the area id discusses the goal using its saved tasks and conversation.
