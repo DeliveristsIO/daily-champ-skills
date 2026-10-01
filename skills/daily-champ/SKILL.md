@@ -148,11 +148,12 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
 - **Lanes are the user's own rows**, not an enum. `todo`, `in_progress` and
   `done` always resolve, and so does any lane the user has named themselves.
   `create_lane` adds one. A starting lane commits tasks to Today; a finishing
-  lane completes them. `update_lane(use_as_today: true)` selects a starting
-  lane for Today focus (requires `starts_work: true`, `finishes_work: false`).
+  lane completes them. `update_lane(use_as_today: true)` configures and selects
+  any lane for Today focus, enabling `starts_work` and disabling `finishes_work`.
   `get_board` marks it `[Today]`. The choice survives reordering and falls back
   to the first starting lane if deleted or made ineligible. Selection leaves
-  task state and placement unchanged. Worklog focus hides Areas completely.
+  task state and placement unchanged; work outside today remains visible on
+  Board and Worklog, but is hidden in Today focus. Worklog focus hides Areas completely.
 - **Areas and lanes lose nothing when deleted.** `delete_area` hands its tasks
   to the Inbox, `delete_lane` moves its work to whichever lane matches where
   each task had got to, and neither the Inbox nor the last lane can go.
@@ -254,7 +255,7 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
 | `update_area` | write | `area` `title?` `color?` | Rename an area or change its colour. |
 | `delete_area` | write | `area` | Take a column off the board. Nothing in it is lost — every task in it moves to the Inbox first. Deleting the Inbox hands its tasks to a fresh Inbox. |
 | `create_lane` | write | `name` `starts_work?` `finishes_work?` | Add a column to the worklog. A lane is placement, and its two flags are what make it mean something: a lane that starts work is the day's list, so a task moved into it is committed to today against the daily limit, and one that finishes work ticks the task off. |
-| `update_lane` | write | `lane` `name?` `starts_work?` `finishes_work?` `use_as_today?` | Rename a worklog lane, change what landing in it means, or select a starting lane for Today focus with use_as_today. Requires starts_work true and finishes_work false. Changing the flags does not re-file the work already sitting there; it changes what the next move into it does. |
+| `update_lane` | write | `lane` `name?` `starts_work?` `finishes_work?` `use_as_today?` | Rename a worklog lane, change what landing in it means, or select it for Today focus with use_as_today. Selecting Today enables starts_work and disables finishes_work. Existing tasks keep their state and placement; new moves into the lane commit to today. |
 | `delete_lane` | write | `lane` | Take a lane off the worklog. The work in it is not lost — each task moves to whichever remaining lane matches where it had got to. The last lane cannot go. |
 | `create_card` | write | `title` `description?` `start_date?` `end_date?` `area?` `most_per_day?` `rest_weekday?` | Start a card: a project with an end, as against an area, which is a standing part of life. With no dates it opens a 90-day window from today. |
 | `update_card` | write | `card` `title?` `description?` `status?` `start_date?` `end_date?` `area?` `most_per_day?` `rest_weekday?` | Change a card, including closing it: achieved when it worked, abandoned when it did not. Neither touches the tasks already written out of its plan. |
