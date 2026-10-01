@@ -154,7 +154,7 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
   to the first starting lane if deleted or made ineligible. Selection leaves
   task state and placement unchanged; work outside today remains visible on
   Board and Worklog, but is hidden in Today focus. Worklog focus hides Areas completely.
-On the board, `F` expands the focused area or worklog lane to the same centered width as Today and Calendar; pressing it again restores the previous view and focus. Task modal fields autosave with a shared Saved / Saving… / Not saved indicator and Retry. Closing waits for pending edits.
+On the board, `w` pulls a task into the worklog and `t` commits the selected task to Today. `T` focuses Today. `z` expands the focused area or worklog lane to the same centered width as Today and Calendar; pressing it again restores the previous view and focus. Task modal fields autosave with a shared Saved / Saving… / Not saved indicator and Retry. Closing waits for pending edits.
 
 The task coach answers questions before proposing actions and treats corrections as updated context. It can suggest steps, separate tasks or an area, but coaching replies do not create them.
 
@@ -386,4 +386,4 @@ Reviewed area drafts may apply explicitly displayed repeat changes to selected e
 
 Area drafts prioritize user requests since the last applied plan and treat saved task inventory as authoritative over coach claims. They omit unchanged existing tasks, show new tasks separately from updates, and expose repeat start/end dates and agreed one-off scheduled dates for review. Selected description, estimate and repeat changes update the existing item; changed items require a fresh draft rather than silently overwriting newer edits. A thirty-day routine remains one item and becomes available through the repeat scheduler on each due date. Area deletion removes its board frame immediately before refreshing related views.
 
-Area and worklog lane headers have an expand/restore icon using the same behavior as F. Draft suggestions are deduplicated by existing item id or normalized title; title matches reuse existing items. Reviewed creation or renames cannot duplicate a live title, and stale drafts refuse rather than silently adding a duplicate.
+Area and worklog lane headers have an expand/restore icon using the same behavior as z. Draft suggestions are deduplicated by existing item id or normalized title; title matches reuse existing items. Reviewed creation or renames cannot duplicate a live title, and stale drafts refuse rather than silently adding a duplicate.
