@@ -154,6 +154,8 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
   to the first starting lane if deleted or made ineligible. Selection leaves
   task state and placement unchanged; work outside today remains visible on
   Board and Worklog, but is hidden in Today focus. Worklog focus hides Areas completely.
+On the board, `F` expands the focused area or worklog lane to the available page width; pressing it again restores the previous view and focus. Task modal fields autosave with a shared Saved / Saving… / Not saved indicator and Retry. Closing waits for pending edits.
+
 - **Areas and lanes lose nothing when deleted.** `delete_area` hands its tasks
   to the Inbox, `delete_lane` moves its work to whichever lane matches where
   each task had got to, and neither the Inbox nor the last lane can go.
