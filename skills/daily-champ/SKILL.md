@@ -79,7 +79,7 @@ Reads hand back both (`id:` is the sitting, `item:` is the board task), so
 whatever you just read you can quote straight back.
 
 A write that needs the missing half makes it. `set_repeat` on a task that only
-exists in the worklog files it under **Inbox** first, because a repeat belongs to
+exists in the worklog creates its task details without inventing an area, because a repeat belongs to
 the task and not to one sitting of it. `move_task` and `schedule_task` on a board
 task pull it into the worklog.
 
@@ -160,9 +160,13 @@ The task coach answers questions before proposing actions and treats corrections
 
 Task rows keep details and their main action visible; labelled secondary actions live in the ⋯ menu. Archive and Delete are separated, and Delete opens the same confirmation dialog on Areas, Worklog and cards. Commit to Today selects the chosen Today lane as well as the date.
 
-- **Areas and lanes lose nothing when deleted.** `delete_area` hands its tasks
-  to the Inbox, `delete_lane` moves its work to whichever lane matches where
-  each task had got to, and neither the Inbox nor the last lane can go.
+- **Deleting an area deletes its unfinished tasks and steps**, including unfinished
+  worklog entries. Completed and archived tasks stay in Archive with their original
+  area name; completed worklog history, tracked time and cards are kept. Prefer
+  archiving the area to keep everything. There is no automatic Inbox. A preserved
+  task without a card needs an area before restoring: use `move_task`, then
+  `archive_task(restore: true)`. Historical area names are shown only to their owner.
+  `delete_lane` still moves its work to eligible remaining lanes; the last lane cannot go.
 - **Archive first, delete last.** `archive_task` puts a task away with its lane,
   its clock and its tracked time intact, and `restore: true` brings all of it
   back. `delete_task` cannot be undone — reach for it only when the human has
@@ -259,7 +263,7 @@ Task rows keep details and their main action visible; labelled secondary actions
 | `delete_step` | write | `step_id` | Take a step off a task for good. |
 | `create_area` | write | `title` `color?` | Add a column to the board. An area is a standing part of someone's life — Home, Work, Health — not a project with an end, which is what a card is for. |
 | `update_area` | write | `area` `title?` `color?` | Rename an area or change its colour. |
-| `delete_area` | write | `area` | Take a column off the board. Nothing in it is lost — every task in it moves to the Inbox first. Deleting the Inbox hands its tasks to a fresh Inbox. |
+| `delete_area` | write | `area` | Delete an area and its unfinished tasks and steps. Completed and archived tasks are kept in Archive with the original area name; completed worklog history and cards are kept. Archive the area instead to keep everything. |
 | `create_lane` | write | `name` `starts_work?` `finishes_work?` | Add a column to the worklog. A lane is placement, and its two flags are what make it mean something: a lane that starts work is the day's list, so a task moved into it is committed to today against the daily limit, and one that finishes work ticks the task off. |
 | `update_lane` | write | `lane` `name?` `starts_work?` `finishes_work?` `use_as_today?` | Rename a worklog lane, change what landing in it means, or select it for Today focus with use_as_today. Selecting Today enables starts_work and disables finishes_work. Existing tasks keep their state and placement; new moves into the lane commit to today. |
 | `delete_lane` | write | `lane` | Take a lane off the worklog. The work in it is not lost — each task moves to whichever remaining lane matches where it had got to. The last lane cannot go. |
@@ -281,7 +285,7 @@ Task rows keep details and their main action visible; labelled secondary actions
 | `share_task` | write | `id` `with` `level?` | Let somebody else in on a task, a card or an area, to look at or to work on — a person, or a group (areas only). Sharing an area exposes every card and task in it, so confirm with the person first. Somebody already in the workspace is told in the app; an email nobody here has is sent an invitation, so check the address before you call this. |
 | `unshare_task` | write | `id` `from` | Take a person or a group off a task, a card or an area. They lose sight of it at once; anything they already wrote on its thread stays. |
 | `share_link` | write | `id` `revoke?` | Make a link that shows a task or a card to anybody who has it, with no sign-in. Say the link back to the person before it goes anywhere. Called with revoke it kills the link instead, at once and for everyone. |
-| `ask_coach` | write | `id` `message` | Put a question to the app's own coach about one task or one card. It answers from what it can see of that thing and remembers the exchange on its thread. It is a smaller model than you — reach for it when the person wants the app's own read, not for advice you can give yourself. |
+| `ask_coach` | write | `id` `message` | Put a question to the app's own coach about one area, task or card. It answers from what it can see of that thing and remembers the exchange on its thread. It is a smaller model than you — reach for it when the person wants the app's own read, not for advice you can give yourself. |
 | `ask_day_coach` | write | `message` `date?` | Put a question to the app's own coach about a whole day. It answers from what is on that day and remembers the exchange, which is what plan_day's draft then reads. |
 | `undo` | write | — | Take back the last change, whoever made it — this reverses the person's own last action in the app just as readily as your own. It goes back one step only, and it does not reach delete_task, delete_card or anything that was said to somebody else. |
 
@@ -384,3 +388,15 @@ to somebody else.
 - **`ask_coach` and `ask_day_coach` cost a rate-limited request** and answer with
   a smaller model than you. Use them when the human wants the app's own read.
   Give your own advice for free.
+
+### Area brainstorming
+
+`ask_coach` accepts an area id for its owner and resumes its saved private conversation. The coach reads current visible cards, tasks and steps, including the owner’s worklog state. Shared-area grants do not grant access to its owner’s brainstorm. In the browser, Area → ⋯ → Brainstorm / Plan opens a modal: discuss, draft, review, add selected tasks. Drafts do not commit work to Today or duplicate linked existing tasks. Existing Cards continue to work.
+
+Creating an area through the board opens brainstorming automatically. Ctrl+Enter (Command+Enter on Mac) sends coach messages. Area draft plans preserve agreed daily/weekly repeats and duration; the user reviews those rules before adding tasks. Coach conversations remember messages but do not provide a dedicated nutrition tracker or silently change task descriptions.
+
+Reviewed area drafts may apply explicitly displayed repeat changes to selected existing tasks, without creating duplicates. Unselected tasks stay unchanged.
+
+Area drafts prioritize user requests since the last applied plan and treat saved task inventory as authoritative over coach claims. They omit unchanged existing tasks, show new tasks separately from updates, and expose repeat start/end dates and agreed one-off scheduled dates for review. Selected description, estimate and repeat changes update the existing item; changed items require a fresh draft rather than silently overwriting newer edits. A thirty-day routine remains one item and becomes available through the repeat scheduler on each due date. Area deletion removes its board frame immediately before refreshing related views.
+
+Area and worklog lane headers have an expand/restore icon using the same behavior as F. Draft suggestions are deduplicated by existing item id or normalized title; title matches reuse existing items. Reviewed creation or renames cannot duplicate a live title, and stale drafts refuse rather than silently adding a duplicate.
