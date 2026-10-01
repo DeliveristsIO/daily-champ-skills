@@ -156,6 +156,8 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
   Board and Worklog, but is hidden in Today focus. Worklog focus hides Areas completely.
 On the board, `F` expands the focused area or worklog lane to the available page width; pressing it again restores the previous view and focus. Task modal fields autosave with a shared Saved / Saving… / Not saved indicator and Retry. Closing waits for pending edits.
 
+The task coach answers questions before proposing actions and treats corrections as updated context. It can suggest steps, separate tasks or a card, but coaching replies do not create them.
+
 - **Areas and lanes lose nothing when deleted.** `delete_area` hands its tasks
   to the Inbox, `delete_lane` moves its work to whichever lane matches where
   each task had got to, and neither the Inbox nor the last lane can go.
