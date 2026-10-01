@@ -154,6 +154,8 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
   to the first starting lane if deleted or made ineligible. Selection leaves
   task state and placement unchanged; work outside today remains visible on
   Board and Worklog, but is hidden in Today focus. Worklog focus hides Areas completely.
+`A` focuses Areas only, hiding Worklog; press again to return. `B` shows the full board. `v` archives or restores the selected task. Areas focus is available at `/areas/focus`.
+
 On the board, `w` pulls a task into the worklog and `t` commits the selected task to Today. `T` focuses Today. `z` expands the focused area or worklog lane to the same centered width as Today and Calendar; pressing it again restores the previous view and focus. Task modal fields autosave with a shared Saved / Saving… / Not saved indicator and Retry. Closing waits for pending edits.
 
 The task coach answers questions before proposing actions and treats corrections as updated context. It can suggest steps, separate tasks or an area, but coaching replies do not create them.
