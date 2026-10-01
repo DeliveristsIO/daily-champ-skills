@@ -2,7 +2,7 @@
 name: daily-champ
 description: |
   Read and change Daily Champ through its MCP server: today and other days, the
-  areas board, worklog lanes, cards and plans, timers, estimates, repeats, steps,
+  areas board, worklog lanes, area plans, timers, estimates, repeats, steps,
   checklists, sharing, and the archive. Use for questions about what to work on,
   what is running, planned, late, or done, and for requests to create, move,
   schedule, complete, share, or review Daily Champ work.
@@ -11,7 +11,7 @@ description: |
 # Daily Champ
 
 Daily Champ is a day tracker: a **board** of areas holding tasks, a **worklog**
-of lanes holding the work in hand, **cards** for projects with an end, and a
+of lanes holding the work in hand, **areas** for projects, and a
 **day** that says what is on. You reach all of it through MCP tools — no CLI, no
 curl — and the tools cover everything the app can do, deleting included.
 
@@ -156,15 +156,15 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
   Board and Worklog, but is hidden in Today focus. Worklog focus hides Areas completely.
 On the board, `F` expands the focused area or worklog lane to the same centered width as Today and Calendar; pressing it again restores the previous view and focus. Task modal fields autosave with a shared Saved / Saving… / Not saved indicator and Retry. Closing waits for pending edits.
 
-The task coach answers questions before proposing actions and treats corrections as updated context. It can suggest steps, separate tasks or a card, but coaching replies do not create them.
+The task coach answers questions before proposing actions and treats corrections as updated context. It can suggest steps, separate tasks or an area, but coaching replies do not create them.
 
-Task rows keep details and their main action visible; labelled secondary actions live in the ⋯ menu. Archive and Delete are separated, and Delete opens the same confirmation dialog on Areas, Worklog and cards. Commit to Today selects the chosen Today lane as well as the date.
+Task rows keep details and their main action visible; labelled secondary actions live in the ⋯ menu. Archive and Delete are separated, and Delete opens the same confirmation dialog on Areas and Worklog. Commit to Today selects the chosen Today lane as well as the date.
 
 - **Deleting an area deletes its unfinished tasks and steps**, including unfinished
   worklog entries. Completed and archived tasks stay in Archive with their original
-  area name; completed worklog history, tracked time and cards are kept. Prefer
+  area name; completed worklog history and tracked time are kept. Prefer
   archiving the area to keep everything. There is no automatic Inbox. A preserved
-  task without a card needs an area before restoring: use `move_task`, then
+  task without an area needs an area before restoring: use `move_task`, then
   `archive_task(restore: true)`. Historical area names are shown only to their owner.
   `delete_lane` still moves its work to eligible remaining lanes; the last lane cannot go.
 - **Archive first, delete last.** `archive_task` puts a task away with its lane,
@@ -176,14 +176,9 @@ Task rows keep details and their main action visible; labelled secondary actions
   task and leaves the days its past sittings are on; `everywhere: true` takes
   both. Every other tool takes either id and does the same thing.
 
-- **Cards are projects, areas are not.** An area is a standing part of someone's
-  life and never ends; a card runs between two dates and has a plan spread over
-  them. `plan_card` with no `tasks` drafts a plan and saves nothing — show it to
-  the human, then call it again with the tasks they kept. Only today and tomorrow
-  are written out as real tasks; the rest arrive each morning.
-- **Finishing a card is a status, not a delete.** `update_card(status:
-  "achieved")` or `"abandoned"` closes it and keeps everything. `delete_card`
-  destroys its tasks, their sittings, its plan and its reviews.
+- **Areas hold responsibilities and projects.** Use `create_area`, then `ask_coach`
+  with its id to continue its private brainstorm. In the browser, review Draft a plan
+  before applying selected tasks, repeats and dates. Old Card links lead to Areas.
 
 - **A day is more than its tasks.** `get_day` shows the sections it is laid out
   in — checklists and notes — and `apply_template` lays a fresh one out. A note
@@ -223,7 +218,7 @@ Task rows keep details and their main action visible; labelled secondary actions
 - **Never invent a number.** Streaks, tracked minutes and counts come from tool
   results. Do not estimate them.
 - **You are the coach.** The app's own coach is a smaller model. `plan_day` and
-  `plan_card` reach it for a draft, which is worth it when the human wants the
+  `ask_coach` reach it for a conversation, which is worth it when the human wants the
   app's own read; otherwise give the advice yourself.
 - **Say what you changed.** Quote the tool's own sentence back; it already names
   the lane, the clock and the day.
@@ -236,10 +231,9 @@ Task rows keep details and their main action visible; labelled secondary actions
 | --- | --- | --- | --- |
 | `get_today` | read | — | What today comes to: the tasks committed to it, which were kept, what is still open, the clock that is running, and how much room is left. Start here when asked what to work on. |
 | `get_board` | read | `include_done?` `include_archived?` | The whole board: every area with the tasks parked in it, and the worklog lanes with the work in hand. Use it to see what exists before adding something new — every heading carries the id you need to change it. |
-| `search_tasks` | read | `query` | Find a task, an area or a card by name. Unfinished work is always findable; finished work drops out after a week. |
+| `search_tasks` | read | `query` | Find a task or an area by name. Unfinished work is always findable; finished work drops out after a week. |
 | `get_task` | read | `task_id` | Everything about one task, from either end: where it lives on the board, where it sits in the worklog, its estimate, its clock, its repeat, its steps, who it is shared with and what has been said on it. |
 | `get_stats` | read | `days?` | How the run is going: the current streak, the best one, what got finished each of the last few days, and which areas the time went into. |
-| `get_cards` | read | `card?` | Cards are the projects with an end: a title, a window of days, and a plan spread across them. With no id this lists them; with one it opens that card, its plan, its tasks and its reviews. |
 | `get_day` | read | `date?` `thread?` | One day in full: what was committed to it and how each promise ended, and the sections it is laid out in — checklists and notes both. Ask for the thread to see what the day's coach has said. |
 | `list_notifications` | read | `unread_only?` `limit?` | What has happened that involves other people: work shared with you, asked of you, accepted, declined or signed off. Reading them here does not mark them read. |
 | `create_task` | write | `title` `area?` `date?` `estimate_minutes?` `lane?` | Add a task. With no area it is committed to a day, or left in the worklog when that day is already at its limit; with an area it is parked on the board until it is pulled in. Several lines in one title become several tasks. |
@@ -249,7 +243,7 @@ Task rows keep details and their main action visible; labelled secondary actions
 | `start_timer` | write | `task_id` | Start the clock on a task. Several clocks may run at once, so anything already running keeps running. |
 | `stop_timer` | write | `task_id?` | Stop the clock and bank what it counted. The task stays where it is — this does not finish it. |
 | `move_task` | write | `task_id` `lane` | Move a task between the worklog lanes. A board task that has never been pulled in is pulled in by this. Moving into the lane that starts work (today) commits the task to today and starts it, up to the daily limit; moving out of it withdraws the commitment. |
-| `file_task` | write | `task_id` `area?` `card?` | Put a task in an area or on a card. This is where it is parked on the board, not which lane it sits in — move_task does lanes. |
+| `file_task` | write | `task_id` `area` | Put a task in an area. This is where it is parked on the board, not which lane it sits in — move_task does lanes. |
 | `put_task_back` | write | `task_id` | Take a task off the worklog board, leaving it waiting in its area. The opposite of pulling one in: the sitting keeps the time already tracked against it, so picking the task up again carries on where it stopped. Its commitment stays: one committed to today is put down in To do, since today's list still holds it. |
 | `schedule_task` | write | `task_id` `date` | Commit a task to a day, pulling it in from the board if it is not in the worklog yet. Its lane and clock are left alone. A day holds a fixed list of commitments, as many as the user set in Settings; a day that has ended and a finished task are refused. |
 | `withdraw_task` | write | `task_id` | Take a task off the day it is committed to. It goes back to the worklog's waiting lane with its tracked time. On a day that has begun the promise stays on the record as withdrawn, and that day can no longer be won; on a later day's draft it leaves no trace. |
@@ -261,17 +255,12 @@ Task rows keep details and their main action visible; labelled secondary actions
 | `add_step` | write | `task_id` `titles` | Break a task down. Steps belong to the task itself, so every sitting of it shows the same list. A worklog-only task is filed on the board first. |
 | `update_step` | write | `step_id` `done?` `title?` | Tick a step off, put it back, or reword it. |
 | `delete_step` | write | `step_id` | Take a step off a task for good. |
-| `create_area` | write | `title` `color?` | Add a column to the board. An area is a standing part of someone's life — Home, Work, Health — not a project with an end, which is what a card is for. |
+| `create_area` | write | `title` `color?` | Add a column to the board. An area holds a responsibility or project — Home, Work, Health, or a launch. Brainstorm and plan its work with ask_coach. |
 | `update_area` | write | `area` `title?` `color?` | Rename an area or change its colour. |
-| `delete_area` | write | `area` | Delete an area and its unfinished tasks and steps. Completed and archived tasks are kept in Archive with the original area name; completed worklog history and cards are kept. Archive the area instead to keep everything. |
+| `delete_area` | write | `area` | Delete an area and its unfinished tasks and steps. Completed and archived tasks are kept in Archive with the original area name; completed worklog history is kept. Archive the area instead to keep everything. |
 | `create_lane` | write | `name` `starts_work?` `finishes_work?` | Add a column to the worklog. A lane is placement, and its two flags are what make it mean something: a lane that starts work is the day's list, so a task moved into it is committed to today against the daily limit, and one that finishes work ticks the task off. |
 | `update_lane` | write | `lane` `name?` `starts_work?` `finishes_work?` `use_as_today?` | Rename a worklog lane, change what landing in it means, or select it for Today focus with use_as_today. Selecting Today enables starts_work and disables finishes_work. Existing tasks keep their state and placement; new moves into the lane commit to today. |
 | `delete_lane` | write | `lane` | Take a lane off the worklog. The work in it is not lost — each task moves to whichever remaining lane matches where it had got to. The last lane cannot go. |
-| `create_card` | write | `title` `description?` `start_date?` `end_date?` `area?` `most_per_day?` `rest_weekday?` | Start a card: a project with an end, as against an area, which is a standing part of life. With no dates it opens a 90-day window from today. |
-| `update_card` | write | `card` `title?` `description?` `status?` `start_date?` `end_date?` `area?` `most_per_day?` `rest_weekday?` | Change a card, including closing it: achieved when it worked, abandoned when it did not. Neither touches the tasks already written out of its plan. |
-| `delete_card` | write | `card` | Destroy a card and everything written out of it. Its tasks go too, and so do their sittings, its plan, its reviews and its coach thread. To stop a card without losing any of that, set its status to abandoned instead. |
-| `plan_card` | write | `card` `tasks?` | Draft or save a card's plan. Called with no tasks it asks the app's own coach for a draft and hands it back without saving anything, so it can be shown to the person first. Called with tasks it saves them, and writes today's and tomorrow's into real tasks; the rest are written each morning as they come. |
-| `review_card` | write | `card` `suggest?` `period_start?` `period_end?` `progress_rating?` `are_items_effective?` `what_worked?` `what_to_improve?` `notes?` | Write a review of how a card is going over a stretch of days. Ask the app's own coach for something to react to first with suggest, which drafts a review without saving it. |
 | `plan_day` | write | `date?` `tasks?` | Draft or fill a day. Called with no tasks it asks the app's own day coach what to commit to, given what is already there, and saves nothing. Called with tasks it commits them, up to the list a day holds. |
 | `apply_template` | write | `template?` `date?` | Lay a day out from a template — its sections and whatever they always start with. With no template named this lists the templates there are and changes nothing. Applying one replaces the sections already on that day. |
 | `delete_section` | write | `section_id` | Take a section off a day, with everything on its checklist. Tasks are not in a section — delete_task takes those. |
@@ -280,14 +269,14 @@ Task rows keep details and their main action visible; labelled secondary actions
 | `delete_checklist_item` | write | `item_id` | Take a line off a day's checklist for good. |
 | `respond_to_task` | write | `task_id` `decision` `reason?` | Answer a task somebody has asked you to do. Accepting takes it on; declining hands it back with the reason, which is written into its thread. Only the person it was given to can answer. |
 | `sign_off_task` | write | `task_id` `decision` `reason?` | Say whether work you asked somebody for is done. Approving closes it; sending it back reopens it with the reason on its thread. Only the person who asked can do either. |
-| `add_comment` | write | `id` `body` | Say something on a task's or a card's thread. Everyone it is shared with sees it, and anyone named with an @ is told — naming somebody who cannot see it reaches nobody, and the answer says so. |
+| `add_comment` | write | `id` `body` | Say something on a task's thread. Everyone it is shared with sees it, and anyone named with an @ is told — naming somebody who cannot see it reaches nobody, and the answer says so. |
 | `delete_comment` | write | `comment_id` | Take back something you said. The line stays on the thread marked as deleted, so nobody is left answering a comment that vanished. Only its author can. |
-| `share_task` | write | `id` `with` `level?` | Let somebody else in on a task, a card or an area, to look at or to work on — a person, or a group (areas only). Sharing an area exposes every card and task in it, so confirm with the person first. Somebody already in the workspace is told in the app; an email nobody here has is sent an invitation, so check the address before you call this. |
-| `unshare_task` | write | `id` `from` | Take a person or a group off a task, a card or an area. They lose sight of it at once; anything they already wrote on its thread stays. |
-| `share_link` | write | `id` `revoke?` | Make a link that shows a task or a card to anybody who has it, with no sign-in. Say the link back to the person before it goes anywhere. Called with revoke it kills the link instead, at once and for everyone. |
-| `ask_coach` | write | `id` `message` | Put a question to the app's own coach about one area, task or card. It answers from what it can see of that thing and remembers the exchange on its thread. It is a smaller model than you — reach for it when the person wants the app's own read, not for advice you can give yourself. |
+| `share_task` | write | `id` `with` `level?` | Let somebody else in on a task or an area, to look at or to work on — a person, or a group (areas only). Sharing an area exposes every task in it, so confirm with the person first. Somebody already in the workspace is told in the app; an email nobody here has is sent an invitation, so check the address before you call this. |
+| `unshare_task` | write | `id` `from` | Take a person or a group off a task or an area. They lose sight of it at once; anything they already wrote on its thread stays. |
+| `share_link` | write | `id` `revoke?` | Make a link that shows a task to anybody who has it, with no sign-in. Say the link back to the person before it goes anywhere. Called with revoke it kills the link instead, at once and for everyone. |
+| `ask_coach` | write | `id` `message` | Put a question to the app's own coach about one area or task. It answers from what it can see of that thing and remembers the exchange on its thread. It is a smaller model than you — reach for it when the person wants the app's own read, not for advice you can give yourself. |
 | `ask_day_coach` | write | `message` `date?` | Put a question to the app's own coach about a whole day. It answers from what is on that day and remembers the exchange, which is what plan_day's draft then reads. |
-| `undo` | write | — | Take back the last change, whoever made it — this reverses the person's own last action in the app just as readily as your own. It goes back one step only, and it does not reach delete_task, delete_card or anything that was said to somebody else. |
+| `undo` | write | — | Take back the last change, whoever made it — this reverses the person's own last action in the app just as readily as your own. It goes back one step only, and it does not reach delete_task or anything that was said to somebody else. |
 
 <!-- tools:end -->
 
@@ -340,11 +329,9 @@ has gone by.
 they stand; anything in progress from an earlier day has already been carried
 onto today by the app. `get_stats` gives the streak and where the time went.
 
-**Start a project.** `create_card` opens a 90-day window; on the Free plan a fourth
-active card is refused and the refusal names the plan page, so do not retry it. Then `plan_card` with
-no `tasks` drafts a plan from the app's own coach and saves nothing — read it
-back, and call `plan_card` again with the tasks they kept. Today's and
-tomorrow's become real tasks; the rest arrive each morning.
+**Start a project.** `create_area` makes its place on the board. `ask_coach`
+with the area id discusses the goal using its saved tasks and conversation.
+Review a draft in the area modal, or add agreed work manually with `create_task`.
 
 **Break something down.** `add_step(task_id: …, titles: [...])`, then
 `update_step(step_id: …, done: true)` as each one is finished. `get_task` shows
@@ -391,7 +378,7 @@ to somebody else.
 
 ### Area brainstorming
 
-`ask_coach` accepts an area id for its owner and resumes its saved private conversation. The coach reads current visible cards, tasks and steps, including the owner’s worklog state. Shared-area grants do not grant access to its owner’s brainstorm. In the browser, Area → ⋯ → Brainstorm / Plan opens a modal: discuss, draft, review, add selected tasks. Drafts do not commit work to Today or duplicate linked existing tasks. Existing Cards continue to work.
+`ask_coach` accepts an area id for its owner and resumes its saved private conversation. The coach reads saved plans, tasks and steps, including the owner’s worklog state. Shared-area grants do not grant access to its owner’s brainstorm. In the browser, Area → ⋯ → Brainstorm / Plan opens a modal: discuss, draft, review, add selected tasks. Drafts do not commit work to Today or duplicate linked existing tasks. Old Card links redirect to Areas.
 
 Creating an area through the board opens brainstorming automatically. Ctrl+Enter (Command+Enter on Mac) sends coach messages. Area draft plans preserve agreed daily/weekly repeats and duration; the user reviews those rules before adding tasks. Coach conversations remember messages but do not provide a dedicated nutrition tracker or silently change task descriptions.
 
