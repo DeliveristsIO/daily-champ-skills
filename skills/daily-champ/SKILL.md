@@ -147,9 +147,12 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
   always what to pick up next.
 - **Lanes are the user's own rows**, not an enum. `todo`, `in_progress` and
   `done` always resolve, and so does any lane the user has named themselves.
-  `create_lane` adds one, and its two flags are what give it meaning: a lane
-  that starts work starts the clock and counts against the WIP limit, one that
-  finishes work ticks the task off.
+  `create_lane` adds one. A starting lane commits tasks to Today; a finishing
+  lane completes them. `update_lane(use_as_today: true)` selects a starting
+  lane for Today focus (requires `starts_work: true`, `finishes_work: false`).
+  `get_board` marks it `[Today]`. The choice survives reordering and falls back
+  to the first starting lane if deleted or made ineligible. Selection leaves
+  task state and placement unchanged. Worklog focus hides Areas completely.
 - **Areas and lanes lose nothing when deleted.** `delete_area` hands its tasks
   to the Inbox, `delete_lane` moves its work to whichever lane matches where
   each task had got to, and neither the Inbox nor the last lane can go.
@@ -234,11 +237,11 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
 | `reopen_task` | write | `task_id` | Put a finished task back to work. It returns to the lane its state belongs in, not necessarily the one it left. |
 | `start_timer` | write | `task_id` | Start the clock on a task. Several clocks may run at once, so anything already running keeps running. |
 | `stop_timer` | write | `task_id?` | Stop the clock and bank what it counted. The task stays where it is — this does not finish it. |
-| `move_task` | write | `task_id` `lane` | Move a task between the worklog lanes. A board task that has never been pulled in is pulled in by this. Moving into a lane that starts work also starts it, and moving out of one puts it back down. |
+| `move_task` | write | `task_id` `lane` | Move a task between the worklog lanes. A board task that has never been pulled in is pulled in by this. Moving into the lane that starts work (today) commits the task to today and starts it, up to the daily limit; moving out of it withdraws the commitment. |
 | `file_task` | write | `task_id` `area?` `card?` | Put a task in an area or on a card. This is where it is parked on the board, not which lane it sits in — move_task does lanes. |
 | `put_task_back` | write | `task_id` | Take a task off the worklog board, leaving it waiting in its area. The opposite of pulling one in: the sitting keeps the time already tracked against it, so picking the task up again carries on where it stopped. Its commitment stays: one committed to today is put down in To do, since today's list still holds it. |
 | `schedule_task` | write | `task_id` `date` | Commit a task to a day, pulling it in from the board if it is not in the worklog yet. Its lane and clock are left alone. A day holds a fixed list of commitments, as many as the user set in Settings; a day that has ended and a finished task are refused. |
-| `withdraw_task` | write | `task_id` | Take a task off the day it is committed to. It stays in the worklog with its lane, clock and time. On a day that has begun the promise stays on the record as withdrawn, and that day can no longer be won; on a later day's draft it leaves no trace. |
+| `withdraw_task` | write | `task_id` | Take a task off the day it is committed to. It goes back to the worklog's waiting lane with its tracked time. On a day that has begun the promise stays on the record as withdrawn, and that day can no longer be won; on a later day's draft it leaves no trace. |
 | `copy_task` | write | `task_id` `date?` `each_day_for?` | Make another go at the same task on a later day. The copy starts fresh: no clock, nothing banked, not done. Use schedule_task instead to move the one that exists. |
 | `set_estimate` | write | `task_id` `minutes` | Say how long a task should take, in minutes. The clock counts down against it, and changing it re-arms the alert that fires when the time is up. |
 | `set_repeat` | write | `task_id` `unit?` `interval?` `days?` `monthday?` `at?` `until_on?` `times?` | Make a task come back. A task that only exists in the worklog is filed on the board first, because a repeat belongs to the task, not to one sitting of it. |
@@ -250,8 +253,8 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
 | `create_area` | write | `title` `color?` | Add a column to the board. An area is a standing part of someone's life — Home, Work, Health — not a project with an end, which is what a card is for. |
 | `update_area` | write | `area` `title?` `color?` | Rename an area or change its colour. |
 | `delete_area` | write | `area` | Take a column off the board. Nothing in it is lost — every task in it moves to the Inbox first. Deleting the Inbox hands its tasks to a fresh Inbox. |
-| `create_lane` | write | `name` `starts_work?` `finishes_work?` | Add a column to the worklog. A lane is placement, and its two flags are what make it mean something: a lane that starts work starts the task's clock running against the WIP limit, and one that finishes work ticks the task off. |
-| `update_lane` | write | `lane` `name?` `starts_work?` `finishes_work?` | Rename a worklog lane or change what landing in it means. Changing the flags does not re-file the work already sitting there; it changes what the next move into it does. |
+| `create_lane` | write | `name` `starts_work?` `finishes_work?` | Add a column to the worklog. A lane is placement, and its two flags are what make it mean something: a lane that starts work is the day's list, so a task moved into it is committed to today against the daily limit, and one that finishes work ticks the task off. |
+| `update_lane` | write | `lane` `name?` `starts_work?` `finishes_work?` `use_as_today?` | Rename a worklog lane, change what landing in it means, or select a starting lane for Today focus with use_as_today. Requires starts_work true and finishes_work false. Changing the flags does not re-file the work already sitting there; it changes what the next move into it does. |
 | `delete_lane` | write | `lane` | Take a lane off the worklog. The work in it is not lost — each task moves to whichever remaining lane matches where it had got to. The last lane cannot go. |
 | `create_card` | write | `title` `description?` `start_date?` `end_date?` `area?` `most_per_day?` `rest_weekday?` | Start a card: a project with an end, as against an area, which is a standing part of life. With no dates it opens a 90-day window from today. |
 | `update_card` | write | `card` `title?` `description?` `status?` `start_date?` `end_date?` `area?` `most_per_day?` `rest_weekday?` | Change a card, including closing it: achieved when it worked, abandoned when it did not. Neither touches the tasks already written out of its plan. |
