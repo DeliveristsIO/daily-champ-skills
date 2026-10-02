@@ -47,4 +47,12 @@ Devices**, one per device, revocable from the same page. Agents you signed in
 through the browser are listed under **Settings → Agents** and disconnect from
 there.
 
+## Reviewer demo
+
+[Watch Daily Champ in ChatGPT](https://www.dailychamp.net/demo/dailychamp-chatgpt-review.html?v=9).
+The recording uses a dedicated account with fictional tasks and covers Today,
+creating an estimated task, starting and completing a timer, weekly repeats,
+statistics, and a short branded outro. It is publicly viewable without
+signing in. Sign-in credentials stay off screen.
+
 Built by [Deliverists.IO](https://deliverists.io).

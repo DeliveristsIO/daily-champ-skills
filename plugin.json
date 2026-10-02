@@ -10,7 +10,14 @@
   },
   "homepage": "https://www.dailychamp.net",
   "repository": "https://github.com/DeliveristsIO/daily-champ-skills",
-  "keywords": ["tasks", "productivity", "timer", "worklog", "planning", "daily-champ"],
+  "keywords": [
+    "tasks",
+    "productivity",
+    "timer",
+    "worklog",
+    "planning",
+    "daily-champ"
+  ],
   "extensions": {
     "com.openai": {
       "interface": {
@@ -19,7 +26,10 @@
         "longDescription": "Read and change a Daily Champ account: what is on today, what is running right now, what is planned, what slipped and what somebody else is waiting on. Adds and moves tasks, starts and stops timers, sets estimates and deadlines, writes repeats, keeps steps and checklists, and shares work with the people who need it.",
         "developerName": "Deliverists.IO Sp. z o.o.",
         "category": "Productivity",
-        "capabilities": ["Read", "Write"],
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
         "websiteURL": "https://www.dailychamp.net",
         "privacyPolicyURL": "https://www.dailychamp.net/privacy",
         "termsOfServiceURL": "https://www.dailychamp.net/terms",
@@ -31,6 +41,9 @@
         "brandColor": "#2b48c8",
         "composerIcon": "./assets/icon.svg",
         "logo": "./assets/icon.svg"
+      },
+      "review": {
+        "demo_recording_url": "https://www.dailychamp.net/demo/dailychamp-chatgpt-review.html?v=9"
       }
     }
   }
