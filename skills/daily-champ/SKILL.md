@@ -89,23 +89,25 @@ is picked up next time, with the time already tracked against it. It does not
 touch the day: `withdraw_task` is what takes a task off the day it was committed
 to. Reach for either rather than deleting the sitting or archiving the task.
 
-## Today holds as many commitments as the person set
+## Today holds the commitments the person chooses
 
 A day is not a list of everything you might do. It holds **the tasks the person
-committed to finish before midnight** — five by default, and they set their own
-number in Settings. A change takes effect the next morning, not the one already under way. Keep them all and the day is a win, keep fewer and it is a
-loss, commit nothing and it is empty. `get_today` says where the day stands —
-`3 of 5 kept · 4 of 5 chosen` — and how much room is left.
+committed to finish before midnight**. The limit on unfinished commitments is
+five by default, and they set it in Settings. Open Today and future drafts adopt
+a changed limit when their existing commitments fit; past and closed days keep
+their recorded limit. Complete all remaining commitments to win, leave any
+unfinished and it is a loss, remove them all and it is empty. `get_today` says where the day stands —
+`3 of 4 kept · 1 of 5 occupied` — and how much room is left.
 
 - **Only a person's choice puts a task on a day.** `schedule_task` and
-  `create_task` commit; moving a task between lanes, starting it and running its
-  timer never do. A task can be worked on for days and committed on only one.
+  `create_task` commit, as does moving a task into the starting (Today) lane.
+  Moving it out removes its commitment to Today. Running a timer never commits it. A task can be worked on for days and committed on only one.
 - **The list has a ceiling.** A task beyond it is refused as *"…already holds
   …"*, naming the number. `plan_day` commits up to the room and says what it left
   out, and `create_task` leaves the extra task in the worklog instead of on the
   day.
-- **The last open commitment locks the list.** Taking one back after that is
-  recorded as withdrawn, and the day can no longer be won. Completing a task
+- **The last open commitment fills the list.** Taking one back removes it
+  from the day and its score, and frees its slot. Completing a task
   keeps its record but frees its slot for a replacement the person chooses; say
   so before you swap something out on their behalf.
 - **Midnight is the person's own.** Each unfinished commitment is recorded as
@@ -154,6 +156,8 @@ loss, commit nothing and it is empty. `get_today` says where the day stands —
   to the first starting lane if deleted or made ineligible. Selection leaves
   task state and placement unchanged; work outside today remains visible on
   Board and Worklog, but is hidden in Today focus. Worklog focus hides Areas completely.
+Moving a task out of an open Today removes its commitment entirely, without a placeholder or scoring penalty. Complete all remaining commitments to win; removing them all leaves an empty day. Already closed days keep their recorded history and score.
+
 `A` focuses Areas only, hiding Worklog; press again to return. `B` shows the full board. `v` archives or restores the selected task. Areas focus is available at `/areas/focus`.
 
 On the board, `w` pulls a task into the worklog and `t` commits the selected task to Today. `T` focuses Today. `z` expands the focused area or worklog lane to the same centered width as Today and Calendar; pressing it again restores the previous view and focus. Task modal fields autosave with a shared Saved / Saving… / Not saved indicator and Retry. Closing waits for pending edits.
@@ -247,8 +251,8 @@ Task rows keep details and their main action visible; labelled secondary actions
 | `move_task` | write | `task_id` `lane` | Move a task between the worklog lanes. A board task that has never been pulled in is pulled in by this. Moving into the lane that starts work (today) commits the task to today and starts it, up to the daily limit; moving out of it withdraws the commitment. |
 | `file_task` | write | `task_id` `area` | Put a task in an area. This is where it is parked on the board, not which lane it sits in — move_task does lanes. |
 | `put_task_back` | write | `task_id` | Take a task off the worklog board, leaving it waiting in its area. The opposite of pulling one in: the sitting keeps the time already tracked against it, so picking the task up again carries on where it stopped. Its commitment stays: one committed to today is put down in To do, since today's list still holds it. |
-| `schedule_task` | write | `task_id` `date` | Commit a task to a day, pulling it in from the board if it is not in the worklog yet. Its lane and clock are left alone. A day holds a fixed list of commitments, as many as the user set in Settings; a day that has ended and a finished task are refused. |
-| `withdraw_task` | write | `task_id` | Take a task off the day it is committed to. It goes back to the worklog's waiting lane with its tracked time. On a day that has begun the promise stays on the record as withdrawn, and that day can no longer be won; on a later day's draft it leaves no trace. |
+| `schedule_task` | write | `task_id` `date` | Commit a task to a day, pulling it in from the board if it is not in the worklog yet. Its lane and clock are left alone. A day holds up to the unfinished commitment limit set in Settings; a day that has ended and a finished task are refused. |
+| `withdraw_task` | write | `task_id` | Take a task off the day it is committed to. It goes back to the worklog's waiting lane with its tracked time. On an open day it removes the commitment without a placeholder or scoring penalty; closed days keep their recorded history. |
 | `copy_task` | write | `task_id` `date?` `each_day_for?` | Make another go at the same task on a later day. The copy starts fresh: no clock, nothing banked, not done. Use schedule_task instead to move the one that exists. |
 | `set_estimate` | write | `task_id` `minutes` | Say how long a task should take, in minutes. The clock counts down against it, and changing it re-arms the alert that fires when the time is up. |
 | `set_repeat` | write | `task_id` `unit?` `interval?` `days?` `monthday?` `at?` `until_on?` `times?` | Make a task come back. A task that only exists in the worklog is filed on the board first, because a repeat belongs to the task, not to one sitting of it. |
@@ -303,13 +307,13 @@ first — that alone stops its clock and banks the time — then move and start 
 second.
 
 **Push it to another day.** `schedule_task(task_id: …, date: "2026-09-15")`.
-Resolve the date yourself and say the weekday back to the user. If it was
-committed to today and today is locked, say that moving it is recorded as
-withdrawn before you do it.
+Resolve the date yourself and say the weekday back to the user. Moving an
+unfinished commitment from an open day removes it from that day without a
+placeholder or scoring penalty.
 
 **Not today after all.** `withdraw_task(task_id: …)` takes it off the day and
-leaves it in the worklog. On a day that has begun the promise stays on the
-record.
+leaves it in the worklog, with its tracked time. The open day keeps no
+placeholder and receives no scoring penalty. Closed-day history stays unchanged.
 
 **Make it weekly.** `set_repeat(task_id: …, unit: "week", days: [1, 3, 5])`.
 Days are numbers, Sunday is 0. `interval: 2` makes it every other week,
