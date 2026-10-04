@@ -203,9 +203,9 @@ Task rows keep details and their main action visible; labelled secondary actions
 - **An @ name on a thread only reaches someone who can already see the task.**
   Naming anybody else reaches nobody; `add_comment` says whose nudge went
   nowhere, so `share_task` them and say it again.
-- **Sharing reaches a task, a card or an area — with a person or a group.**
-  `share_task` and `unshare_task` take any of the three ids; a group (by name)
-  can only be given an area. **Sharing an area exposes every card and task in
+- **Sharing reaches a task or an area — with a person or a group.**
+  `share_task` and `unshare_task` take either id; a group (by name)
+  can only be given an area. **Sharing an area exposes every task in
   it**, so say so and get a yes before you do it. Only the area's owner shares
   it, and a person who is in through a group is taken off by taking the group
   off. Areas shared with you appear in `get_board` under *Shared with you*;
@@ -349,7 +349,7 @@ Review a draft in the area modal, or add agreed work manually with `create_task`
 the list and the count.
 
 **Hand something to someone.** `update_task(task_id: …, assignee: "…")` asks
-them, `share_task` lets them see it (a task, a card or an area — with a person
+them, `share_task` lets them see it (a task or an area — with a person
 or a group), and `get_task` says where it has got to.
 When they finish it, it comes back to the owner for `sign_off_task`.
 
