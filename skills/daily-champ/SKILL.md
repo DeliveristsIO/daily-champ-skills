@@ -5,7 +5,8 @@ description: |
   areas board, worklog lanes, area plans, timers, estimates, repeats, steps,
   checklists, sharing, and the archive. Use for questions about what to work on,
   what is running, planned, late, or done, and for requests to create, move,
-  schedule, complete, share, or review Daily Champ work.
+  schedule, complete, share, or review Daily Champ work, and to read or write
+  a day's journal.
 ---
 
 # Daily Champ
@@ -248,8 +249,7 @@ Task rows keep details and their main action visible; labelled secondary actions
 | `get_task` | read | `task_id` | Everything about one task, from either end: where it lives on the board, where it sits in the worklog, its estimate, its clock, its repeat, its steps, who it is shared with and what has been said on it. |
 | `get_stats` | read | `days?` | How the run is going: the current streak, the best one, what got finished each of the last few days, and which areas the time went into. |
 | `get_day` | read | `date?` `thread?` | One day in full: what was committed to it and how each promise ended, and the sections it is laid out in — checklists and notes both. Ask for the thread to see what the day's coach has said. |
-| `get_journal` | read | `date?` | One day's journal, which only you can read: the diary notes, the evening review (what went well, what got in the way, the intention for tomorrow), energy, whether it was finished, the day's facts, the AI summary and the lessons proposed or accepted from it. |
-| `list_lessons` | read | `status?` | The lessons about how you work that your day reviews have produced, which only you can read. Accepted ones are what the day coach plans from; proposed ones wait for you to accept them in the app. |
+| `get_journal` | read | `date?` | One day's journal, which only you can read: the diary notes, how the day went and the intention for tomorrow (older days may also have went-well and got-in-the-way answers), whether it was finished, the day's facts, and any AI summary written earlier. |
 | `list_notifications` | read | `unread_only?` `limit?` | What has happened that involves other people: work shared with you, asked of you, accepted, declined or signed off. Reading them here does not mark them read. |
 | `create_task` | write | `title` `area?` `date?` `estimate_minutes?` `lane?` | Add a task. With no area it is committed to a day, or left in the worklog when that day is already at its limit; with an area it is parked on the board until it is pulled in. Several lines in one title become several tasks. |
 | `update_task` | write | `task_id` `title?` `description?` `notes?` `note?` `tag?` `deadline?` `assignee?` | Change a task's wording, its deadline, its tag or who it is for. A rename carries across both halves on its own, so it does not matter which id you hold. |
@@ -291,16 +291,12 @@ Task rows keep details and their main action visible; labelled secondary actions
 | `share_link` | write | `id` `revoke?` | Make a link that shows a task to anybody who has it, with no sign-in. Say the link back to the person before it goes anywhere. Called with revoke it kills the link instead, at once and for everyone. |
 | `ask_coach` | write | `id` `message` | Put a question to the app's own coach about one area or task. It answers from what it can see of that thing and remembers the exchange on its thread. It is a smaller model than you — reach for it when the person wants the app's own read, not for advice you can give yourself. |
 | `ask_day_coach` | write | `message` `date?` | Put a question to the app's own coach about a whole day. It answers from what is on that day and remembers the exchange, which is what plan_day's draft then reads. |
-| `write_journal` | write | `date?` `notes?` `went_well?` `got_in_the_way?` `tomorrow_intention?` `energy?` `finish?` | Write into one day's journal, which only you can read. Give any of the fields; a field you leave out stays as it was and an empty string clears it. finish marks the review finished and asks for the AI reflection when the plan includes it. It never closes the day or changes a task. |
+| `write_journal` | write | `date?` `notes?` `tomorrow_intention?` | Write into one day's journal, which only you can read. Give any of the fields; a field you leave out stays as it was and an empty string clears it. On Pro, writing the intention lets the AI match it to your open tasks. It never closes the day or changes a task. |
 | `undo` | write | — | Take back the last change, whoever made it — this reverses the person's own last action in the app just as readily as your own. It goes back one step only, and it does not reach delete_task or anything that was said to somebody else. |
 
 <!-- tools:end -->
 
 ## Workflows
-
-**Review the day.** In the evening, `get_journal` for the facts and what is
-already written; ask what went well, what got in the way and what they mean to do
-tomorrow, then `write_journal(... finish: true)`. Skipping a review costs nothing.
 
 **Plan my day.** `get_journal` for yesterday's date gives the intention they left
 themselves; start from it. `get_today` for what is already committed and how much room is
@@ -309,6 +305,16 @@ commitments — no more than its limit.
 Add what is missing with `create_task`, and commit anything from the board with
 `schedule_task(task_id: …, date: <today>)`. Give each one a `set_estimate` so
 the clock has something to count against.
+
+**Write the day's journal.** In the evening, `get_journal(date: …)` first, so you add
+to what is there; ask how the day went and what they mean to start with tomorrow.
+Skipping it costs nothing. `write_journal(notes: …)` is how the day went, in the
+person's own words;
+`write_journal(tomorrow_intention: …)` is what they want to start with
+tomorrow. A field you leave out stays as it was and an empty string clears it.
+Writing never closes the day or touches a task. The intention reaches Plan my
+day tomorrow, and on Pro the app matches it to an open task, so name the task
+the way it is on the board.
 
 **What am I working on?** `get_today`. The first line after the date says
 `Running now:` with the elapsed and the budget, or `No clock running.`
@@ -382,6 +388,10 @@ to somebody else.
 - **Several titles in one call.** `create_task` splits on newlines and
   semicolons, so a pasted list becomes a list of tasks. It returns one line per
   task made.
+- **The journal is private to the person.** `get_journal` and `write_journal`
+  only ever reach their own days, shared areas do not change that, and older days
+  may still carry "went well" and "got in the way" answers from before the
+  journal became one field.
 - **Finished work drops out of search after a week.** Unfinished work is always
   findable.
 - **`search_tasks` needs two characters.** Shorter queries match nothing.
